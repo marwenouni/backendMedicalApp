@@ -1,0 +1,11 @@
+[build]
+builder = "nixpacks"
+
+[variables]
+JAVA_VERSION = "17"
+
+[phases.build]
+cmds = ["./mvnw -B -DskipTests clean package"]  # pas de -Pproduction
+
+[phases.start]
+cmd = "java -Dserver.port=$PORT -jar target/*.jar"

@@ -41,6 +41,12 @@ public class JwtAuthenticationController {
 	
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> CreateAuthToken(@RequestBody LoginDto loginDto) throws Exception {
+		String url  = System.getProperty("spring.datasource.url");
+        String user = System.getProperty("spring.datasource.username");
+        String pwd  = System.getProperty("spring.datasource.password");
+        System.out.println("=xxxx"+url);
+        System.out.println("=xxxx"+user);
+        System.out.println("=xxxx"+pwd);
 		return ResponseEntity.ok(authService.signIn(loginDto));
 		
 		//		String token;

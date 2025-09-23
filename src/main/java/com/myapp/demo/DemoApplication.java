@@ -23,12 +23,7 @@ public class DemoApplication {
 	  FileStorageService storageService;
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
-		String url  = System.getProperty("spring.datasource.url");
-        String user = System.getProperty("spring.datasource.username");
-        String pwd  = System.getProperty("spring.datasource.password");
-        System.out.println("=xxxx"+url);
-        System.out.println("=xxxx"+user);
-        System.out.println("=xxxx"+pwd);
+		
 	}
 //	@Override
 //	  public void run(String... arg) throws Exception {

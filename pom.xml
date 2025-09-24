@@ -35,11 +35,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<version>8.0.32</version>
-		</dependency>
+
 		
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 
@@ -104,23 +100,13 @@
 			<version>1.17.2</version>
 		</dependency>
 		
-<!-- Flyway (core + support MySQL) -->
-  <dependency>
-    <groupId>org.flywaydb</groupId>
-    <artifactId>flyway-core</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.flywaydb</groupId>
-    <artifactId>flyway-mysql</artifactId>
-  </dependency>
 
 
   <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
-    <version>9.4.0</version>
-    <scope>runtime</scope>
   </dependency>
+
 
 
 

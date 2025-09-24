@@ -7,8 +7,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 

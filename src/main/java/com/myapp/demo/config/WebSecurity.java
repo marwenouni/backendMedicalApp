@@ -56,7 +56,6 @@ public class WebSecurity {
 		
 		return http.addFilterBefore(corsFilter(), SessionManagementFilter.class).csrf().disable()
 				.authorizeHttpRequests()
-				.requestMatchers("/api/ui").authenticated()
 				.requestMatchers("/auth/**").permitAll()
 				//.requestMatchers(HttpMethod.DELETE).hasAuthority("ADMIN") 	// If UserDetails.getAuthorities return [ADMIN, ...]
 				//.requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")		// If UserDetails.getAuthorities return [ROLE_ADMIN, ...] 

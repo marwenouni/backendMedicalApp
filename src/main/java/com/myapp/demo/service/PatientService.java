@@ -23,7 +23,10 @@ import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuer
 import org.springframework.stereotype.Service;
 
 import com.myapp.demo.Repository.IPatientRepository;
+import com.myapp.demo.controller.PatientsEventsController;
 import com.myapp.demo.entity.Patient;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class PatientService implements IPatientService {
@@ -31,6 +34,8 @@ public class PatientService implements IPatientService {
 	List<Patient> patient;
 	@Autowired
 	IPatientRepository patientRepo;
+	@Autowired 
+	PatientsEventsController sse;
 
 	public PatientService() {
 
@@ -225,8 +230,25 @@ public class PatientService implements IPatientService {
 	
 	@Override
 	public Patient add(Patient p) {
-		return patientRepo.save(p);
+		Patient saved = patientRepo.save(p);
+	    sse.notifyPatientsChanged();
+	    return saved;
 			}
+	
+	@Override
+	  @Transactional
+	  public Patient update(Patient p) {
+	    Patient saved = patientRepo.save(p);
+	    sse.notifyPatientsChanged();
+	    return saved;
+	  }
+	
+	@Override
+	  @Transactional
+	  public void delete(int id) {
+		patientRepo.deleteById(id);
+	    sse.notifyPatientsChanged();
+	  }
 
 	@Override
 	public List<Patient> findAllPatientByLastName(String lastname) {
@@ -242,6 +264,8 @@ public class PatientService implements IPatientService {
 	public List<Patient> findAllPatientByPhoneNumber(String phonenumber) {
 		return patientRepo.findByNumberPhone(phonenumber);
 	}
+	
+	
 
 	
 

@@ -48,5 +48,9 @@ public interface IPatientService {
 	
 	List<Patient> findAllPatientByPhoneNumber(String phonenumber);
 
+	Patient update(Patient p);
+
+	void delete(int id);
+
 		
 }

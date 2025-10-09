@@ -13,7 +13,7 @@ public class CorsConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 	  CorsConfiguration cfg = new CorsConfiguration();
-	  cfg.setAllowedOrigins(List.of("https://backendmedicalapp-production.up.railway.app")); // ton front
+	  cfg.setAllowedOrigins(List.of("https://mymedicalapp.netlify.app/")); // ton front
 	  cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
 	  cfg.setAllowedHeaders(List.of("authorization","content-type"));
 	  cfg.setAllowCredentials(false); // laisse à false si tu n’utilises pas de cookies

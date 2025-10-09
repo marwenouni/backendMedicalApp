@@ -6,12 +6,13 @@ import com.myapp.demo.dto.PatientDelta;
 import com.myapp.demo.dto.PatientDto;
 import com.myapp.demo.entity.Patient;
 import com.myapp.demo.entity.PatientChange;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("api/patient")
 @CrossOrigin
@@ -29,39 +30,44 @@ public class PatientsChangesController {
   public PatientDelta changes(@RequestParam("since") long since,
                               @RequestParam(value = "limit", defaultValue = "500") int limit) {
 
-    var page    = PageRequest.of(0, limit, Sort.by("changeId").ascending());
-    var changes = changesRepo.findByChangeIdGreaterThanOrderByChangeIdAsc(since, page).getContent();
+	  var pageReq = PageRequest.of(0, limit, Sort.by("changeId").ascending());
+	  var page    = changesRepo.findByChangeIdGreaterThanOrderByChangeIdAsc(since, pageReq);
+	  var changes = page.getContent();
+	  boolean more = page.hasNext();
 
-    // ids à upserter / supprimer
-    List<Long> idsUpsert = changes.stream()
-        .filter(c -> !"D".equals(c.getOp()))
+    var idsUpsert = changes.stream()
+        .filter(c -> !"D".equalsIgnoreCase(c.getOp()))
         .map(PatientChange::getRowId)
         .distinct()
         .toList();
 
-    List<Long> idsDelete = changes.stream()
-        .filter(c ->  "D".equals(c.getOp()))
+    var idsDelete = changes.stream()
+        .filter(c ->  "D".equalsIgnoreCase(c.getOp()))
         .map(PatientChange::getRowId)
         .distinct()
         .toList();
+    
+    
 
-    // cast Long -> Integer pour le repository de Patient
-    List<Integer> idsUpsertInt = idsUpsert.stream()
-        .map(Long::intValue)
-        .toList();
+    // le PK de Patient est Integer ? Alors caste :
+    // var upsertIdsInt = idsUpsert.stream().map(Long::intValue).toList();
+    // var patients = upsertIdsInt.isEmpty() ? List.<Patient>of() : patientRepo.findAllById(upsertIdsInt);
 
-    List<Long> idsUpsertLong = idsUpsert; // c'est déjà des Long
-    List<Patient> patients = idsUpsertLong.isEmpty()
-        ? List.of()
-        : patientRepo.findAllById(idsUpsertLong);
+    // si ton PK Patient est Long, garde Long :
+    var patients = idsUpsert.isEmpty() ? List.<Patient>of() : patientRepo.findAllById(idsUpsert);
 
-    List<PatientDto> upserts = patients.stream()
-        .map(PatientDto::from) // <-- nécessite PatientDto.from(...)
-        .toList();
+    var upserts = patients.stream().map(PatientDto::from).toList();
 
     long next    = changes.isEmpty() ? since : changes.get(changes.size() - 1).getChangeId();
-    boolean more = changes.size() == limit;
-
+     more = changes.size() == limit;
+     System.out.println("since=" + since + ", limit=" + limit);
+     System.out.println("changes.size=" + changes.size());
+     changes.forEach(c -> System.out.println(
+       "cid=" + c.getChangeId() + " row=" + c.getRowId() + " op=" + c.getOp()
+     ));
+     System.out.println("idsUpsert=" + idsUpsert);
+     System.out.println("idsDelete=" + idsDelete);
+     System.out.println("patients.size=" + patients.size());
     return new PatientDelta(since, next, upserts, idsDelete, more);
   }
 }

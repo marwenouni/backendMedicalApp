@@ -63,6 +63,7 @@ public class WebSecurity {
 
         // Ouvre SSE + delta
         .requestMatchers("/events/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
         .requestMatchers("/api/patient/changes").permitAll()
 
         // Auth publiques (login/register)

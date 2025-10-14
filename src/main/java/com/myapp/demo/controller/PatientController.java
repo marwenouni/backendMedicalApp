@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -240,15 +241,25 @@ public class PatientController {
 	
 	@PostMapping("/add-patient")
 	  public ResponseEntity<Map<String, Object>> addPatient(@RequestBody 
-			  Patient patient) {
+			  Patient patient) throws InterruptedException {
 		//birthday="birthday";
 		//Patient patient=new Patient(idCabinet,firstname,lastname,birthday,numberPhone,email,city);
-	    System.out.println("birthday is : "+patient.getBirthday());
-	    
+		Patient saved = patientService.createIdempotent(patient);
+		 
+	    Thread.sleep(10000);
+	    // 1) Si déjà existant → OK idempotent
+	    var existing = patientRepository.findByClientUuid(patient.getClientUuid());
+	    if (existing.isPresent()) {
+	      var p = existing.get();
+	      return ResponseEntity.ok(Map.of("patients", Map.of("id", p.getId(), "clientUuid", p.getClientUuid())));
+	    }
 		try {
 	    patientService.add(patient);
 	    		Map<String, Object> response = new HashMap();
-	      response.put("patients", patient);
+	      response.put("patients", Map.of(
+	    	      "id", saved.getId(),
+	    	      "clientUuid", saved.getClientUuid()
+	    	  ));
 	      
 	      return new ResponseEntity<>(response, HttpStatus.OK);
 	    }
@@ -256,7 +267,26 @@ public class PatientController {
 	    	System.out.println(e.getMessage());
 	      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
+		
 	  }
+	
+
+	
+	@GetMapping("/by-client-uuid/{uuid}")
+	public ResponseEntity<Map<String,Object>> getByClientUuid(@PathVariable String uuid) {
+	  return patientRepository.findByClientUuid(uuid)
+	    .map(p -> {
+	      Map<String,Object> patient = new HashMap<>();
+	      patient.put("id", p.getId());
+	      patient.put("clientUuid", p.getClientUuid());
+
+	      Map<String,Object> body = new HashMap<>();
+	      body.put("patients", patient);
+	      return ResponseEntity.ok(body);
+	    })
+	    .orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
 
 	
 

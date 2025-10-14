@@ -22,6 +22,8 @@ public interface IPatientRepository extends JpaRepository<Patient, Long> {
 
 	
 	List<Patient> findByLastNameStartingWith(String firstname);
+
+	Optional<Patient> findByClientUuid(String clientUuid);
 	
 	List<Patient> getPatientsByFirstNameContaining(String firstname);
 	

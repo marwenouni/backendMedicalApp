@@ -52,5 +52,7 @@ public interface IPatientService {
 
 	void delete(int id);
 
+	Patient createIdempotent(Patient p);
+
 		
 }

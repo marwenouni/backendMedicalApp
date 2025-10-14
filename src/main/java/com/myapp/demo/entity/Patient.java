@@ -26,6 +26,8 @@ public class Patient {
 	private String numberPhone;
 	private String email;
 	private String city;
+	@Column(name = "client_uuid", nullable = false, unique = true)
+	private String clientUuid;
 
 	public Patient(){}
 	public Patient(Integer id2,Integer idCabinet2,String firstname2, String lastname2, String birthday2, String numberPhone2,
@@ -104,4 +106,7 @@ public class Patient {
 		this.city = city;
 	}
 
+	public String getClientUuid() { return clientUuid; }
+	
+	public void setClientUuid(String clientUuid) { this.clientUuid = clientUuid; }
 }

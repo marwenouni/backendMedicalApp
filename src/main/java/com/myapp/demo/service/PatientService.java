@@ -251,6 +251,15 @@ public class PatientService implements IPatientService {
 	  }
 
 	@Override
+	 public Patient createIdempotent(Patient p) {
+		    String cu = p.getClientUuid();
+		    if (cu != null && !cu.isBlank()) {
+		      return patientRepo.findByClientUuid(cu).orElseGet(() -> patientRepo.save(p));
+		    }
+		    return patientRepo.save(p);
+		  }
+	 
+	@Override
 	public List<Patient> findAllPatientByLastName(String lastname) {
 		return patientRepo.findByLastNameContaining(lastname);
 	}

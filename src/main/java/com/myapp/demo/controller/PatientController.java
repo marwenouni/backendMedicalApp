@@ -244,7 +244,7 @@ public class PatientController {
 			  Patient patient) throws InterruptedException {
 		//birthday="birthday";
 		//Patient patient=new Patient(idCabinet,firstname,lastname,birthday,numberPhone,email,city);
-		Patient saved = patientService.createIdempotent(patient);
+		
 		 
 	    Thread.sleep(10000);
 	    // 1) Si déjà existant → OK idempotent
@@ -253,6 +253,7 @@ public class PatientController {
 	      var p = existing.get();
 	      return ResponseEntity.ok(Map.of("patients", Map.of("id", p.getId(), "clientUuid", p.getClientUuid())));
 	    }
+	    Patient saved = patientService.createIdempotent(patient);
 		try {
 	    patientService.add(patient);
 	    		Map<String, Object> response = new HashMap();
@@ -269,6 +270,8 @@ public class PatientController {
 	    }
 		
 	  }
+	
+	
 	
 
 	

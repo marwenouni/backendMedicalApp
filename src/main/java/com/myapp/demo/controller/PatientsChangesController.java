@@ -60,14 +60,7 @@ public class PatientsChangesController {
 
     long next    = changes.isEmpty() ? since : changes.get(changes.size() - 1).getChangeId();
      more = changes.size() == limit;
-     System.out.println("since=" + since + ", limit=" + limit);
-     System.out.println("changes.size=" + changes.size());
-     changes.forEach(c -> System.out.println(
-       "cid=" + c.getChangeId() + " row=" + c.getRowId() + " op=" + c.getOp()
-     ));
-     System.out.println("idsUpsert=" + idsUpsert);
-     System.out.println("idsDelete=" + idsDelete);
-     System.out.println("patients.size=" + patients.size());
+     
     return new PatientDelta(since, next, upserts, idsDelete, more);
   }
 }

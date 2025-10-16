@@ -1,11 +1,14 @@
 package com.myapp.demo.controller;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.jsoup.nodes.Attribute;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +74,6 @@ public class PatientController {
 			Page<Patient> pagePatients = patientService.findAllPatientByFilter(paging);
 			// findByFirstName("marwen", paging);
 			patients = pagePatients.getContent();
-			System.out.println("patients" + patients);
 
 			Map<String, Object> response = new HashMap();
 			response.put("patients", patients);
@@ -135,7 +137,6 @@ public class PatientController {
 
 			List<Patient> pagePatients = patientService.findAllPatientByBirthday(birthday);
 			patients = pagePatients;
-			System.out.println("patients" + patients);
 
 			Map<String, Object> response = new HashMap();
 			response.put("patients", patients);
@@ -276,7 +277,7 @@ public class PatientController {
 	public ResponseEntity<Map<String, Object>> updatedSince(
 	    @RequestParam("since") long sinceEpochMs,
 	    @RequestParam(defaultValue = "0") int page,
-	    @RequestParam(defaultValue = "1000") int size) {
+	    @RequestParam(defaultValue = "10000") int size) {
 
 	  Instant since = Instant.ofEpochMilli(sinceEpochMs);
 	  Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "updatedAt"));
@@ -317,7 +318,54 @@ public class PatientController {
 	}
 
 
-	
+	@PostMapping("/seed-using-add")
+	public ResponseEntity<Map<String,Object>> seedUsingAdd(@RequestParam(defaultValue = "10") int count) {
+	  var r = ThreadLocalRandom.current();
+
+	  String[] firstNames = {"Amine","Lina","Youssef","Nour","Sami","Ines","Karim","Maya","Rami","Leila"};
+	  String[] lastNames  = {"Ben Ali","Trabelsi","Gharbi","Haddad","Jaziri","Khemiri","Ayari","Mansour","Slim","Bouaziz"};
+	  String[] cities     = {"Tunis","Sousse","Sfax","Nabeul","Bizerte","Gabès","Kairouan","Monastir","Mahdia","Ariana"};
+
+	  int inserted = 0;
+
+	  for (int i = 0; i < count; i++) {
+	    try {
+	      Patient p = new Patient();
+
+	      String fn   = firstNames[r.nextInt(firstNames.length)];
+	      String ln   = lastNames[r.nextInt(lastNames.length)];
+	      String city = cities[r.nextInt(cities.length)];
+
+	      long minDay = LocalDate.of(1960,1,1).toEpochDay();
+	      long maxDay = LocalDate.of(2015,12,31).toEpochDay();
+	      long day    = r.nextLong(minDay, maxDay);
+p.setIdCabinet(1);
+	      p.setFirstName(fn);
+	      p.setLastName(ln);
+	      p.setCity(city);
+	      p.setBirthday(LocalDate.ofEpochDay(day).toString()); // "yyyy-MM-dd"
+	      p.setNumberPhone("2" + String.format("%08d", r.nextInt(100_000_000)));
+	      p.setEmail((fn + "." + ln + i + "@seed.local").replaceAll("\\s+","").toLowerCase());
+
+	      // idempotence côté serveur si tu l’utilises
+	      p.setClientUuid(UUID.randomUUID().toString());
+
+	      // si ton entité a updatedAt (Instant)
+	      try {
+	        p.getClass().getMethod("setUpdatedAt", Instant.class).invoke(p, Instant.now());
+	      } catch (NoSuchMethodException ignore) {}
+
+	      // ⬇️ appel direct du service existant
+	      patientService.add(p);
+
+	      inserted++;
+	    } catch (Exception ex) {
+	      // on ignore cet enregistrement et on continue
+	    }
+	  }
+
+	  return ResponseEntity.ok(Map.of("requested", count, "inserted", inserted));
+	}
 
 
 }

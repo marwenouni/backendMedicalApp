@@ -2,6 +2,7 @@ package com.myapp.demo.entity;
 
 
 import java.sql.Date;
+import java.time.Instant;
 
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,8 @@ public class Patient {
 	private String city;
 	@Column(name = "client_uuid", nullable = false, unique = true)
 	private String clientUuid;
+	@Column(name = "updated_at", nullable = false)
+	private Instant updatedAt;
 
 	public Patient(){}
 	public Patient(Integer id2,Integer idCabinet2,String firstname2, String lastname2, String birthday2, String numberPhone2,
@@ -105,6 +108,10 @@ public class Patient {
 	public void setCity(String city) {
 		this.city = city;
 	}
+	
+
+	  public Instant getUpdatedAt() { return updatedAt; }
+	  public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 
 	public String getClientUuid() { return clientUuid; }
 	

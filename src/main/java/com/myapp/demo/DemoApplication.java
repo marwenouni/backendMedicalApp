@@ -25,6 +25,7 @@ public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 		
+		
 	}
 //	@Override
 //	  public void run(String... arg) throws Exception {

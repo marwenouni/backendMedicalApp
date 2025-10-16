@@ -1,5 +1,6 @@
 package com.myapp.demo.controller;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -271,7 +272,32 @@ public class PatientController {
 		
 	  }
 	
-	
+	@GetMapping("/updated-since")
+	public ResponseEntity<Map<String, Object>> updatedSince(
+	    @RequestParam("since") long sinceEpochMs,
+	    @RequestParam(defaultValue = "0") int page,
+	    @RequestParam(defaultValue = "1000") int size) {
+
+	  Instant since = Instant.ofEpochMilli(sinceEpochMs);
+	  Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "updatedAt"));
+
+	  Page<Patient> pageRes = patientRepository.findByUpdatedAtAfter(since, paging);
+
+	  long maxSeen = pageRes.getContent().stream()
+	      .map(p -> p.getUpdatedAt() != null ? p.getUpdatedAt().toEpochMilli() : sinceEpochMs)
+	      .max(Long::compareTo)
+	      .orElse(sinceEpochMs);
+
+	  Map<String, Object> body = new HashMap<>();
+	  body.put("patients", pageRes.getContent());
+	  body.put("currentPage", pageRes.getNumber());
+	  body.put("totalPages", pageRes.getTotalPages());
+	  body.put("nextSince", maxSeen);
+
+	  return ResponseEntity.ok(body);
+	}
+
+
 	
 
 	

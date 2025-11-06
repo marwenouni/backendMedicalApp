@@ -18,6 +18,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("api/documents")
@@ -119,15 +121,31 @@ public class DocumentController {
 	    return Map.of("sessionId", sid, "mobileUrl", mobilePath, "expiresInSec", QR_TTL_MS / 1000);
 	  }
 
-	  @GetMapping("/qr/stream")
+	  @GetMapping(value = "/qr/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	  public SseEmitter stream(@RequestParam("sid") String sid) {
 	    if (expired(sid)) throw new ResponseStatusException(HttpStatus.GONE, "Session expired");
-	    SseEmitter emitter = new SseEmitter(QR_TTL_MS);
+
+	    long timeout = 10 * 60 * 1000; // 10 min
+	    SseEmitter emitter = new SseEmitter(timeout);
 	    sseEmitters.put(sid, emitter);
 	    emitter.onCompletion(() -> sseEmitters.remove(sid));
 	    emitter.onTimeout(() -> sseEmitters.remove(sid));
+
+	    // ping initial (évite timeouts précoces)
+	    try { emitter.send(SseEmitter.event().name("hello").data("ok")); } catch (Exception ignored) {}
+
+	    var scheduler = Executors.newSingleThreadScheduledExecutor();
+	    scheduler.scheduleAtFixedRate(() -> {
+	      try { emitter.send(SseEmitter.event().comment("keep-alive")); }
+	      catch (Exception e) { try { emitter.complete(); } catch (Exception ignore) {} scheduler.shutdownNow(); }
+	    }, 25, 25, TimeUnit.SECONDS);
+
+	    emitter.onCompletion(scheduler::shutdownNow);
+	    emitter.onTimeout(scheduler::shutdownNow);
+
 	    return emitter;
 	  }
+
 
 	  @PostMapping(value = "/qr/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	  public Map<String, Object> mobileUpload(

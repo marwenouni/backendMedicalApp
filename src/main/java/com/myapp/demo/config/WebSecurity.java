@@ -65,6 +65,8 @@ public class WebSecurity {
         .requestMatchers("/events/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
         .requestMatchers("/api/patient/changes").permitAll()
+        .requestMatchers("/api/consultation/**").permitAll()
+        .requestMatchers("/api/documents/**").permitAll()
 
         // Auth publiques (login/register)
         .requestMatchers("/auth/**").permitAll()

@@ -3,6 +3,8 @@ package com.myapp.demo.controller;
 
 import com.myapp.demo.entity.Document;
 import com.myapp.demo.service.DocumentService;
+import com.myapp.demo.service.FileStorageService;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -29,6 +32,8 @@ public class DocumentController {
 
 	@Autowired
   DocumentService service;
+	@Autowired
+  FileStorageService storage; 
 	
 	// === QR session & SSE en mémoire (remplace par Redis/DB si besoin) ===
 	  private static final long QR_TTL_MS = 10 * 60 * 1000;
@@ -88,20 +93,25 @@ public class DocumentController {
   }
 
   @GetMapping("/{id}/download")
-  public ResponseEntity<?> download(@PathVariable Long id) throws Exception {
-    Document d = service.get(id);
-    if (d == null) return ResponseEntity.notFound().build();
+  public ResponseEntity<byte[]> download(
+      @PathVariable Long id,
+      @RequestParam(name = "inline", defaultValue = "true") boolean inline
+  ) throws IOException {
+      Document d = service.findById(id);
+      byte[] bytes = storage.read(d.getStoragePath()); // ✅ maintenant existe !
 
-    var stream = service.openStream(d);
-    var resource = new InputStreamResource(stream);
+      String mime = d.getMimeType() != null ? d.getMimeType() : "application/octet-stream";
+      String filename = d.getOriginalName() != null ? d.getOriginalName() : "document";
+      String disposition = (inline ? "inline" : "attachment") + "; filename=\"" + filename + "\"";
 
-    String encoded = URLEncoder.encode(d.getOriginalName(), StandardCharsets.UTF_8);
-    return ResponseEntity.ok()
-        .contentType(MediaType.parseMediaType(d.getMimeType()))
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encoded)
-        .contentLength(d.getSizeBytes())
-        .body(resource);
+      return ResponseEntity.ok()
+          .contentType(MediaType.parseMediaType(mime))
+          .header(HttpHeaders.CONTENT_DISPOSITION, disposition)
+          .header(HttpHeaders.CACHE_CONTROL, "no-store")
+          .body(bytes);
   }
+
+
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> delete(@PathVariable Long id) throws Exception {
@@ -167,6 +177,7 @@ public class DocumentController {
 	    SseEmitter em = sseEmitters.get(sid);
 	    if (em != null) {
 	      try {
+	    	  //
 	        em.send(SseEmitter.event().name("file-ready").data(Map.of(
 	          "tempId", tempId,
 	          "filename", ref.name(),

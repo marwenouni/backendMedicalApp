@@ -112,5 +112,10 @@ public class DocumentService {
     return i > 0 && i < name.length() - 1 ? name.substring(i + 1).toLowerCase() : "";
   }
 
+public Document findById(Long id) {
+	
+return repo.getById(id);
+}
+
 
 }

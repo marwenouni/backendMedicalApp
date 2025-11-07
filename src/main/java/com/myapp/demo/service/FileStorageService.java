@@ -42,6 +42,27 @@ public class FileStorageService implements IFileStorageService{
 		
 	}
 
+	   /** 🔹 Lis un fichier existant et retourne son contenu en bytes */
+    public byte[] read(String relativePath) throws IOException {
+        if (relativePath == null || relativePath.isBlank()) {
+            throw new IllegalArgumentException("Le chemin du fichier est vide");
+        }
+
+        Path file = root.resolve(relativePath).normalize();
+        if (!Files.exists(file)) {
+            throw new IOException("Fichier introuvable: " + file);
+        }
+
+        return Files.readAllBytes(file);
+    }
+
+    /** Supprime un fichier du stockage */
+    public void delete(String relativePath) throws IOException {
+        if (relativePath == null || relativePath.isBlank()) return;
+        Path file = root.resolve(relativePath).normalize();
+        if (Files.exists(file)) Files.delete(file);
+    }
+
 	@Override
 	public Resource load(String filename) {
 		// TODO Auto-generated method stub

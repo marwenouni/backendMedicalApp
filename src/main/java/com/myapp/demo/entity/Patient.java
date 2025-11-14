@@ -21,6 +21,8 @@ public class Patient {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private Integer idCabinet;
+	@Column(name = "gender", nullable = false, unique = true)
+	private String gender;
 	private String firstName;
 	private String lastName;
 	private String birthday;
@@ -81,6 +83,12 @@ public class Patient {
 		return birthday;
 	}
 
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 	public void setBirthday(String birthday) {
 		this.birthday = birthday;
 	}

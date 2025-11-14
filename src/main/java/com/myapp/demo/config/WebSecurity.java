@@ -67,10 +67,10 @@ public class WebSecurity {
         .requestMatchers("/api/patient/changes").permitAll()
         .requestMatchers("/api/consultation/**").permitAll()
         .requestMatchers("/api/documents/**").permitAll()
-
+        .requestMatchers("/api/rdv/**").permitAll()
         // Auth publiques (login/register)
         .requestMatchers("/auth/**").permitAll()
-
+        
         // (optionnel pour débug) ouvrir GET patients :
         .requestMatchers(HttpMethod.GET, "/api/patient/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/patient/**").permitAll()

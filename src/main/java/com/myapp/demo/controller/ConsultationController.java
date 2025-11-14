@@ -19,145 +19,134 @@ import java.util.*;
 @CrossOrigin
 public class ConsultationController {
 
-  @Autowired
-  public IConsultationService consultationService;
-  
-  @Autowired
-	IConsultationRepository consultationRepository;
-  IDocumentRepository documentRepository;
+	@Autowired
+	public IConsultationService consultationService;
 
-  // --- GET by id ---
-  @GetMapping
-  public ResponseEntity<Map<String,Object>> getById(@RequestParam Integer id) {
-    var c = consultationService.getConsultationById(id);
-    if (c == null) return ResponseEntity.notFound().build();
-    return ResponseEntity.ok(Map.of("consultations", c));
-  }
+	// --- GET by id ---
+	@GetMapping
+	public ResponseEntity<Map<String, Object>> getById(@RequestParam Integer id) {
+		var c = consultationService.getConsultationById(id);
+		if (c == null)
+			return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(Map.of("consultations", c));
+	}
 
-  // --- GET all (attention: à paginer en prod) ---
-  @GetMapping("/all")
-  public ResponseEntity<Map<String,Object>> getAll() {
-    List<Consultation> list = consultationService.getAllConsultations();
-    return ResponseEntity.ok(Map.of("consultations", list));
-  }
+	// --- GET all (attention: à paginer en prod) ---
+	@GetMapping("/all")
+	public ResponseEntity<Map<String, Object>> getAll() {
+		List<Consultation> list = consultationService.getAllConsultations();
+		return ResponseEntity.ok(Map.of("consultations", list));
+	}
 
-  // --- GET by patient (paginé) ---
-  @GetMapping("/by-patient")
-  public ResponseEntity<Map<String,Object>> byPatient(
-      @RequestParam Integer idPatient,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "20") int size
-  ) {
-    Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-    Page<Consultation> res = consultationService.findByPatientPaged(idPatient, paging);
+	// --- GET by patient (paginé) ---
+	@GetMapping("/by-patient")
+	public ResponseEntity<Map<String, Object>> byPatient(@RequestParam Integer idPatient,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+		Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+		Page<Consultation> res = consultationService.findByPatientPaged(idPatient, paging);
 
-    Map<String,Object> body = new HashMap<>();
-    body.put("consultations", res.getContent());
-    body.put("currentPage", res.getNumber());
-    body.put("totalItems", res.getTotalElements());
-    body.put("totalPages", res.getTotalPages());
-    return ResponseEntity.ok(body);
-  }
+		Map<String, Object> body = new HashMap<>();
+		body.put("consultations", res.getContent());
+		body.put("currentPage", res.getNumber());
+		body.put("totalItems", res.getTotalElements());
+		body.put("totalPages", res.getTotalPages());
+		return ResponseEntity.ok(body);
+	}
 
-  // --- GET incremental (updatedSince) ---
-  @GetMapping("/updated-since")
-  public ResponseEntity<Map<String,Object>> updatedSince(
-		  @RequestParam("since") long sinceEpochMs,
-		    @RequestParam(defaultValue = "0") int page,
-		    @RequestParam(defaultValue = "10000") int size) {
+	// --- GET incremental (updatedSince) ---
 
-		  Instant since = Instant.ofEpochMilli(sinceEpochMs);
-		  
-    Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "updatedAt"));
-    Page<Consultation> res = consultationService.findUpdatedSince(since, paging);
-    Page<Consultation> pageRes = consultationRepository.findByUpdatedAtAfter(since, paging);
-	  long maxSeen = pageRes.getContent().stream()
-		      .map(p -> p.getUpdatedAt() != null ? p.getUpdatedAt().toEpochMilli() : sinceEpochMs)
-		      .max(Long::compareTo)
-		      .orElse(sinceEpochMs);
-	  
-    Map<String,Object> body = new HashMap<>();
-    body.put("consultations", res.getContent());
-    body.put("currentPage", res.getNumber());
-    body.put("totalItems", res.getTotalElements());
-    body.put("totalPages", res.getTotalPages());
-    
-	  body.put("nextSince", maxSeen);
-    // Pour un vrai delta, tu peux aussi renvoyer nextTs = max(updatedAt)
-    return ResponseEntity.ok(body);
-  }
+	@GetMapping("/updated-since")
+	public ResponseEntity<Map<String, Object>> updatedSince(@RequestParam("since") long sinceEpochMs,
+			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10000") int size) {
 
-  // --- POST add-consultation (idempotent si clientUuid fourni) ---
-  @PostMapping("/add-consultation")
-  public ResponseEntity<Map<String,Object>> add(@RequestBody Consultation c) {
-    
-    if (c.getClientUuid() != null && !c.getClientUuid().isBlank()) {
-      var existing = consultationService.findByClientUuid(c.getClientUuid());
-      if (existing.isPresent()) {
-        var e = existing.get();
-        return ResponseEntity.ok(Map.of("consultations", Map.of("id", e.getId(), "clientUuid", e.getClientUuid())));
-      }
-    }
-    Consultation saved = consultationService.add(c);
-    return ResponseEntity.ok(Map.of("consultations", Map.of("id", saved.getId(), "clientUuid", saved.getClientUuid())));
-  }
+		Instant since = Instant.ofEpochMilli(sinceEpochMs);
+		Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "updatedAt"));
 
-  // --- PUT update ---
-  @PutMapping("/{id}")
-  public ResponseEntity<Map<String,Object>> update(@PathVariable Integer id, @RequestBody Consultation c) {
-    var current = consultationService.getConsultationById(id);
-    if (current == null) return ResponseEntity.notFound().build();
+		Page<Consultation> pageRes = consultationService.findByUpdatedAtAfter(since, paging);
 
-    // merge minimum
-    current.setObservation(c.getObservation());
-    current.setTraitement(c.getTraitement());
-    current.setExamen(c.getExamen());
-    current.setDate(c.getDate());
-    current.setIdCabinet(c.getIdCabinet());
-    current.setIdPatient(c.getIdPatient());
+		long maxSeen = pageRes.getContent().stream()
+				.map(p -> p.getUpdatedAt() != null ? p.getUpdatedAt().toEpochMilli() : sinceEpochMs)
+				.max(Long::compareTo).orElse(sinceEpochMs);
 
-    Consultation saved = consultationService.update(current);
-    return ResponseEntity.ok(Map.of("consultations", saved));
-  }
+		Map<String, Object> body = new HashMap<>();
+		body.put("consultations", pageRes.getContent());
+		body.put("currentPage", pageRes.getNumber());
+		body.put("totalPages", pageRes.getTotalPages());
+		body.put("nextSince", maxSeen);
+System.out.println("execution api");
+		return ResponseEntity.ok(body);
+	}
 
-  // --- DELETE ---
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Integer id) {
-    var current = consultationService.getConsultationById(id);
-    if (current == null) return ResponseEntity.notFound().build();
-    consultationService.delete(id);
-    return ResponseEntity.noContent().build();
-  }
+	@PostMapping("/add-consultation")
+	public ResponseEntity<Map<String, Object>> add(@RequestBody Consultation c) {
 
-  // (Optionnel) lookup idempotence
-  @GetMapping("/by-client-uuid/{uuid}")
-  public ResponseEntity<Map<String,Object>> byClientUuid(@PathVariable String uuid) {
+		if (c.getClientUuid() != null && !c.getClientUuid().isBlank()) {
+			var existing = consultationService.findByClientUuid(c.getClientUuid());
+			if (existing.isPresent()) {
+				var e = existing.get();
+				return ResponseEntity
+						.ok(Map.of("consultations", Map.of("id", e.getId(), "clientUuid", e.getClientUuid())));
+			}
+		}
+		Consultation saved = consultationService.add(c);
+		return ResponseEntity
+				.ok(Map.of("consultations", Map.of("id", saved.getId(), "clientUuid", saved.getClientUuid())));
+	}
 
-    return consultationService.findByClientUuid(uuid)
-    	    .map(p -> {
-    	      Map<String,Object> patient = new HashMap<>();
-    	      patient.put("id", p.getId());
-    	      patient.put("clientUuid", p.getClientUuid());
+	// --- PUT update ---
+	@PutMapping("/{id}")
+	public ResponseEntity<Map<String, Object>> update(@PathVariable Integer id, @RequestBody Consultation c) {
+		var current = consultationService.getConsultationById(id);
+		if (current == null)
+			return ResponseEntity.notFound().build();
 
-    	      Map<String,Object> body = new HashMap<>();
-    	      body.put("patients", patient);
-    	      return ResponseEntity.ok(body);
-    	    })
-    	    .orElseGet(() -> ResponseEntity.notFound().build());
-    	}
-  
-  @GetMapping("/filter")
-  public ResponseEntity<Map<String, Object>> filter(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "20") int size
-  ) {
-    var paging = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-    var p = consultationRepository.findAll(paging);
-    Map<String, Object> response = new HashMap<>();
-    response.put("consultations", p.getContent());
-    response.put("currentPage", p.getNumber());
-    response.put("totalPages", p.getTotalPages());
-    return ResponseEntity.ok(response);
-  }
-  
+		// merge minimum
+		current.setObservation(c.getObservation());
+		current.setTraitement(c.getTraitement());
+		current.setExamen(c.getExamen());
+		current.setDate(c.getDate());
+		current.setIdCabinet(c.getIdCabinet());
+		current.setIdPatient(c.getIdPatient());
+
+		Consultation saved = consultationService.update(current);
+		return ResponseEntity.ok(Map.of("consultations", saved));
+	}
+
+	// --- DELETE ---
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Integer id) {
+		var current = consultationService.getConsultationById(id);
+		if (current == null)
+			return ResponseEntity.notFound().build();
+		consultationService.delete(id);
+		return ResponseEntity.noContent().build();
+	}
+
+	// (Optionnel) lookup idempotence
+	@GetMapping("/by-client-uuid/{uuid}")
+	public ResponseEntity<Map<String, Object>> byClientUuid(@PathVariable String uuid) {
+
+		return consultationService.findByClientUuid(uuid).map(p -> {
+			Map<String, Object> consultation = new HashMap<>();
+			consultation.put("id", p.getId());
+			consultation.put("clientUuid", p.getClientUuid());
+
+			Map<String, Object> body = new HashMap<>();
+			body.put("consultation", consultation);
+			return ResponseEntity.ok(body);
+		}).orElseGet(() -> ResponseEntity.notFound().build());
+	}
+
+	@GetMapping("/filter")
+	public ResponseEntity<Map<String, Object>> filter(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size) {
+		var paging = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
+		var p = consultationService.findAll(paging);
+		Map<String, Object> response = new HashMap<>();
+		response.put("consultations", p.getContent());
+		response.put("currentPage", p.getNumber());
+		response.put("totalPages", p.getTotalPages());
+		return ResponseEntity.ok(response);
+	}
+
 }

@@ -17,6 +17,9 @@ public class Consultation {
   private Integer idPatient;
 
   @Column(columnDefinition = "TEXT")
+  private String motif;
+  
+  @Column(columnDefinition = "TEXT")
   private String observation;
 
   @Column(columnDefinition = "TEXT")
@@ -63,7 +66,15 @@ public class Consultation {
   public Integer getIdPatient() { return idPatient; }
   public void setIdPatient(Integer idPatient) { this.idPatient = idPatient; }
 
-  public String getObservation() { return observation; }
+  public String getMotif() {
+	return motif;
+}
+
+public void setMotif(String motif) {
+	this.motif = motif;
+}
+
+public String getObservation() { return observation; }
   public void setObservation(String observation) { this.observation = observation; }
 
   public String getTraitement() { return traitement; }

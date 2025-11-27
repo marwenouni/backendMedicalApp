@@ -4,7 +4,7 @@ import com.myapp.demo.entity.RendezVous;
 import java.time.Instant;
 
 public record RdvDTO(
-    Long id, Long cabinetId, Long chartId,
+    Long id, Long cabinetId, Long patientId,
     Instant startAt, Instant endAt,
     String status, String motif,
     Long movedFromId,
@@ -12,7 +12,7 @@ public record RdvDTO(
 ) {
   public static RdvDTO of(RendezVous r){
     return new RdvDTO(
-      r.getId(), r.getCabinetId(), r.getChartId(),
+      r.getId(), r.getCabinetId(), r.getPatientId(),
       r.getStartAt(), r.getEndAt(),
       r.getStatus().name(), r.getMotif(),
       r.getMovedFromId(),

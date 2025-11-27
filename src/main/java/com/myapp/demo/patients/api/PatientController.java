@@ -1,4 +1,4 @@
-package com.myapp.demo.charts.api;
+package com.myapp.demo.patients.api;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,86 +22,86 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myapp.demo.charts.api.dto.ChartDto;
-import com.myapp.demo.charts.app.interfaces.IChartService;
+import com.myapp.demo.patients.api.dto.PatientDto;
+import com.myapp.demo.patients.app.interfaces.IPatientService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 
 @RestController
-@RequestMapping("api/charts")
+@RequestMapping("api/patients")
 @CrossOrigin()
-public class ChartController {
+public class PatientController {
 
-	private final IChartService chartService;
+	private final IPatientService patientService;
 
-	public ChartController(IChartService chartService) {
-		this.chartService = chartService;
+	public PatientController(IPatientService patientService) {
+		this.patientService = patientService;
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ChartDto> getById(@PathVariable Long id) {
-		return chartService.getChartById(id).map(p -> ResponseEntity.ok(p))
+	public ResponseEntity<PatientDto> getById(@PathVariable Long id) {
+		return patientService.getPatientById(id).map(p -> ResponseEntity.ok(p))
 				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 	}
 
 	@GetMapping("/filter")
-	public ResponseEntity<Map<String, Object>> findAllChartByFilter(@RequestParam(defaultValue = "0") int page,
+	public ResponseEntity<Map<String, Object>> findAllPatientByFilter(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "3") int size) {
 		size = Math.max(1, Math.min(size, 200)); // borne
-		List<ChartDto> charts = new ArrayList<>(Arrays.asList());
+		List<PatientDto> patients = new ArrayList<>(Arrays.asList());
 		Pageable paging = PageRequest.of(page, size);
 
-		Page<ChartDto> pageCharts = chartService.findAllChartByFilter(paging);
-		charts = pageCharts.getContent();
+		Page<PatientDto> pagePatients = patientService.findAllPatientByFilter(paging);
+		patients = pagePatients.getContent();
 
 		Map<String, Object> response = new HashMap<String, Object>();
-		response.put("charts", charts);
-		response.put("currentPage", pageCharts.getNumber());
-		response.put("totalItems", pageCharts.getTotalElements());
-		response.put("totalPages", pageCharts.getTotalPages());
+		response.put("patients", patients);
+		response.put("currentPage", pagePatients.getNumber());
+		response.put("totalItems", pagePatients.getTotalElements());
+		response.put("totalPages", pagePatients.getTotalPages());
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
 
 	@GetMapping(value = "/by-cabinet", produces = "application/json")
-	public ResponseEntity<List<ChartDto>> findAllByCabinet(@RequestParam Long idCabinet,
+	public ResponseEntity<List<PatientDto>> findAllByCabinet(@RequestParam Long idCabinet,
 			@RequestParam(defaultValue = "lastName") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortDir) {
 		if (idCabinet == null) {
 			return ResponseEntity.badRequest().build();
 		}
-		List<ChartDto> charts = chartService.findAllChartByIdCabinet(idCabinet);
+		List<PatientDto> patients = patientService.findAllPatientByIdCabinet(idCabinet);
 
 		return ResponseEntity.ok().header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-				.header("Pragma", "no-cache").body(charts);
+				.header("Pragma", "no-cache").body(patients);
 	}
 
 	@GetMapping(value = "/by-provider", produces = "application/json")
-	public ResponseEntity<List<ChartDto>> findAllByProvider(@RequestParam Long idProvider,
+	public ResponseEntity<List<PatientDto>> findAllByProvider(@RequestParam Long idProvider,
 			@RequestParam(defaultValue = "lastName") String sortBy,
 			@RequestParam(defaultValue = "asc") String sortDir) {
 		if (idProvider == null) {
 			return ResponseEntity.badRequest().build();
 		}
-		List<ChartDto> charts = chartService.findAllChartByIdProvider(idProvider);
+		List<PatientDto> patients = patientService.findAllPatientByIdProvider(idProvider);
 
 		return ResponseEntity.ok().header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-				.header("Pragma", "no-cache").body(charts);
+				.header("Pragma", "no-cache").body(patients);
 	}
 
 //a revoir
 	@GetMapping("/searchbyfirstname")
-	public ResponseEntity<Map<String, Object>> findAllChartByFirstName(String firstname) {
+	public ResponseEntity<Map<String, Object>> findAllPatientByFirstName(String firstname) {
 		try {
-			List<ChartDto> charts = new ArrayList<>(Arrays.asList());
+			List<PatientDto> patients = new ArrayList<>(Arrays.asList());
 
-			List<ChartDto> pageCharts = chartService.findAllChartByFirstName(firstname);
-			charts = pageCharts;
+			List<PatientDto> pagePatients = patientService.findAllPatientByFirstName(firstname);
+			patients = pagePatients;
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("charts", charts);
+			response.put("patients", patients);
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -110,14 +110,14 @@ public class ChartController {
 	}
 
 	@GetMapping("/searchbylastname")
-	public ResponseEntity<Map<String, Object>> findAllChartByLastName(String lastname) {
+	public ResponseEntity<Map<String, Object>> findAllPatientByLastName(String lastname) {
 		try {
-			List<ChartDto> charts = new ArrayList<>(Arrays.asList());
+			List<PatientDto> patients = new ArrayList<>(Arrays.asList());
 
-			List<ChartDto> pageCharts = chartService.findAllChartByLastName(lastname);
-			charts = pageCharts;
+			List<PatientDto> pagePatients = patientService.findAllPatientByLastName(lastname);
+			patients = pagePatients;
 			Map<String, Object> response = new HashMap<>();
-			response.put("charts", charts);
+			response.put("patients", patients);
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -126,15 +126,15 @@ public class ChartController {
 	}
 
 	@GetMapping("/searchbybirthday")
-	public ResponseEntity<Map<String, Object>> findAllChartByBirthday(LocalDate birthday) {
+	public ResponseEntity<Map<String, Object>> findAllPatientByBirthday(LocalDate birthday) {
 		try {
-			List<ChartDto> charts = new ArrayList<>(Arrays.asList());
+			List<PatientDto> patients = new ArrayList<>(Arrays.asList());
 
-			List<ChartDto> pageCharts = chartService.findAllChartByBirthday(birthday);
-			charts = pageCharts;
+			List<PatientDto> pagePatients = patientService.findAllPatientByBirthday(birthday);
+			patients = pagePatients;
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("charts", charts);
+			response.put("patients", patients);
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -143,15 +143,15 @@ public class ChartController {
 	}
 
 	@GetMapping("/searchbyphonenumber")
-	public ResponseEntity<Map<String, Object>> findAllChartByPhoneNumber(String phonenumber) {
+	public ResponseEntity<Map<String, Object>> findAllPatientByPhoneNumber(String phonenumber) {
 		try {
-			List<ChartDto> charts = new ArrayList<>(Arrays.asList());
+			List<PatientDto> patients = new ArrayList<>(Arrays.asList());
 
-			List<ChartDto> pageCharts = chartService.findAllChartByPhoneMobile(phonenumber);
-			charts = pageCharts;
+			List<PatientDto> pagePatients = patientService.findAllPatientByPhoneMobile(phonenumber);
+			patients = pagePatients;
 
 			Map<String, Object> response = new HashMap<>();
-			response.put("charts", charts);
+			response.put("patients", patients);
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
@@ -159,28 +159,28 @@ public class ChartController {
 		}
 	}
 
-	@PostMapping("/add-chart")
-	public ResponseEntity<ChartDto> addChart(@RequestBody ChartDto dto) throws InterruptedException {
+	@PostMapping("/add-patient")
+	public ResponseEntity<PatientDto> addPatient(@RequestBody PatientDto dto) throws InterruptedException {
 
 		// 1) Si déjà existant → OK idempotent
-		var existing = chartService.findByClientUuid(dto.clientUuid());
+		var existing = patientService.findByClientUuid(dto.clientUuid());
 		if (existing.isPresent()) {
 			var p = existing.get();
 			return ResponseEntity.ok(p);
 		}
-		ChartDto saved = chartService.createIdempotent(dto);
-		return ResponseEntity.created(java.net.URI.create("/api/charts/" + saved.id())).body(saved);
+		PatientDto saved = patientService.createIdempotent(dto);
+		return ResponseEntity.created(java.net.URI.create("/api/patients/" + saved.id())).body(saved);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateChart(@RequestBody ChartDto dto) {
+	public ResponseEntity<?> updatePatient(@RequestBody PatientDto dto) {
 		if (dto == null) {
 			return ResponseEntity.badRequest()
-					.body(Map.of("error", "INVALID_BODY", "message", "Body ChartDto requis"));
+					.body(Map.of("error", "INVALID_BODY", "message", "Body PatientDto requis"));
 		}
 
 		try {
-			var updated = chartService.update(dto);
+			var updated = patientService.update(dto);
 			return ResponseEntity.ok().header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
 					.header("Pragma", "no-cache").body(updated);
 		} catch (EntityNotFoundException e) {
@@ -198,20 +198,20 @@ public class ChartController {
 	}
 
 	@GetMapping("/updated-since")
-	public ResponseEntity<List<ChartDto>> updatedSince(@RequestParam("since") long sinceEpochMs) {
+	public ResponseEntity<List<PatientDto>> updatedSince(@RequestParam("since") long sinceEpochMs) {
 
 		long nonNegativeSince = Math.max(0L, sinceEpochMs);
 
 		Instant since = Instant.ofEpochMilli(nonNegativeSince);
 
-		List<ChartDto> charts = chartService.findUpdated(since);
+		List<PatientDto> patients = patientService.findUpdated(since);
 
-		return ResponseEntity.ok(charts);
+		return ResponseEntity.ok(patients);
 	}
 
 	@GetMapping("/by-client-uuid/{uuid}")
-	public ResponseEntity<ChartDto> getByClientUuid(@PathVariable String uuid) {
-		return chartService.findByClientUuid(uuid).map(p -> ResponseEntity.ok(p))
+	public ResponseEntity<PatientDto> getByClientUuid(@PathVariable String uuid) {
+		return patientService.findByClientUuid(uuid).map(p -> ResponseEntity.ok(p))
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 

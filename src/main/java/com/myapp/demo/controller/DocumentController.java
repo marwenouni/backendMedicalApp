@@ -63,13 +63,13 @@ public class DocumentController {
     );
   }
 
-	 @GetMapping("/chart")
-  public ResponseEntity<?> listByChart(
-      @RequestParam Long chartId,
+	 @GetMapping("/patient")
+  public ResponseEntity<?> listByPatient(
+      @RequestParam Long patientId,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size
   ) {
-    Page<Document> p = service.listByChart(chartId, page, size);
+    Page<Document> p = service.listByPatient(patientId, page, size);
     return ResponseEntity.ok(
       java.util.Map.of(
         "totalItems", p.getTotalElements(),
@@ -82,13 +82,13 @@ public class DocumentController {
 	 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<?> upload(
-      @RequestParam Long chartId,
+      @RequestParam Long patientId,
       @RequestParam Long consultationId,
       @RequestParam(required = false, defaultValue = "AUTRE") String type,
       @RequestParam(required = false) String createdBy,
       @RequestPart("file") MultipartFile file
   ) throws Exception {
-    Document d = service.save(chartId,consultationId, type, createdBy, file);
+    Document d = service.save(patientId,consultationId, type, createdBy, file);
     return ResponseEntity.ok(java.util.Map.of("document", d));
   }
 

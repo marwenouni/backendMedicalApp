@@ -1,10 +1,10 @@
-package com.myapp.demo.charts.api.dto;
+package com.myapp.demo.patients.api.dto;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-public record ChartDto(Long id, Long idCabinet, Long idProvider,String clientUuid,
+public record PatientDto(Long id, Long idCabinet, Long idProvider,String clientUuid,
 
 		// identity
 		String firstName, String middleName, String lastName, String preferredName, String gender, LocalDate birthday,

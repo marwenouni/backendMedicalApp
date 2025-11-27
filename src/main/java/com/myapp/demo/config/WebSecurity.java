@@ -64,19 +64,19 @@ public class WebSecurity {
         // Ouvre SSE + delta
         .requestMatchers("/events/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
-        .requestMatchers("/api/chart/changes").permitAll()
+        .requestMatchers("/api/patient/changes").permitAll()
         .requestMatchers("/api/consultation/**").permitAll()
         .requestMatchers("/api/documents/**").permitAll()
         .requestMatchers("/api/rdv/**").permitAll()
         // Auth publiques (login/register)
         .requestMatchers("/auth/**").permitAll()
         
-        // (optionnel pour débug) ouvrir GET charts :
-        .requestMatchers(HttpMethod.GET, "/api/charts/**").permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/charts/**").permitAll()
-        .requestMatchers(HttpMethod.POST, "/api/charts/**").permitAll()
-        .requestMatchers(HttpMethod.PUT, "/api/charts/**").permitAll()
-        .requestMatchers(HttpMethod.DELETE, "/api/charts/**").permitAll()
+        // (optionnel pour débug) ouvrir GET patients :
+        .requestMatchers(HttpMethod.GET, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/api/patients/**").permitAll()
         // le reste protégé par JWT
         .anyRequest().authenticated()
       )

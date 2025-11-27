@@ -29,8 +29,8 @@ public class DocumentService {
   @Value("${app.storage.root:/tmp/uploads}") // dossier racine configurable
   private String storageRoot;
 
-  public Page<Document> listByChart(Long idChart, int page, int size) {
-    return repo.findByIdChartOrderByUpdatedAtDesc(idChart, PageRequest.of(page, size));
+  public Page<Document> listByPatient(Long idPatient, int page, int size) {
+    return repo.findByIdPatientOrderByUpdatedAtDesc(idPatient, PageRequest.of(page, size));
   }
   
   public Page<Document> listByConsultation(Long IdConsultation, int page, int size) {
@@ -43,7 +43,7 @@ public class DocumentService {
   }
 
   @Transactional
-  public Document save(Long idChart,Long idConsultation,String type, String createdBy, MultipartFile file) throws Exception {
+  public Document save(Long idPatient,Long idConsultation,String type, String createdBy, MultipartFile file) throws Exception {
     // 1) checksum
     String sha256 = sha256Hex(file.getInputStream());
 
@@ -69,7 +69,7 @@ public class DocumentService {
 
     // 6) persistance meta
     Document d = new Document();
-    d.setIdChart(idChart);
+    d.setIdPatient(idPatient);
     d.setIdConsultation(idConsultation);
     d.setType(type != null ? type : "AUTRE");
     d.setOriginalName(file.getOriginalFilename());

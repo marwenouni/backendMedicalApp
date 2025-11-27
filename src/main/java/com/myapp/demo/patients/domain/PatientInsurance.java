@@ -1,4 +1,4 @@
-package com.myapp.demo.charts.domain;
+package com.myapp.demo.patients.domain;
 
 import java.time.LocalDate;
 
@@ -13,11 +13,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 
-@Entity @Table(name="chart_insurance")
+@Entity @Table(name="patient_insurance")
 @Getter @Setter
-public class ChartInsurance {
+public class PatientInsurance {
 @Id private Long id;
-@MapsId @OneToOne @JoinColumn(name="core_id") private ChartCore core;
+@MapsId @OneToOne @JoinColumn(name="core_id") private PatientCore core;
 
 @Column(name="provider", length=120)  private String provider;
 @Column(name="member_id", length=80)  private String memberId;
@@ -29,10 +29,10 @@ public Long getId() {
 public void setId(Long id) {
 	this.id = id;
 }
-public ChartCore getCore() {
+public PatientCore getCore() {
 	return core;
 }
-public void setCore(ChartCore core) {
+public void setCore(PatientCore core) {
 	this.core = core;
 }
 public String getProvider() {

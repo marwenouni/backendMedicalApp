@@ -13,8 +13,8 @@ public class Consultation {
   @Column(name = "id_cabinet")
   private Integer idCabinet;
 
-  @Column(name = "id_chart", nullable = false)
-  private Integer idChart;
+  @Column(name = "id_patient", nullable = false)
+  private Integer idPatient;
 
   @Column(columnDefinition = "TEXT")
   private String motif;
@@ -33,7 +33,7 @@ public class Consultation {
   @Column(name = "date")
   private String date;
 
-  // Idempotence facultative (même principe que chart.clientUuid)
+  // Idempotence facultative (même principe que patient.clientUuid)
   @Column(name = "client_uuid", unique = true)
   private String clientUuid;
 
@@ -63,8 +63,8 @@ public class Consultation {
   public Integer getIdCabinet() { return idCabinet; }
   public void setIdCabinet(Integer idCabinet) { this.idCabinet = idCabinet; }
 
-  public Integer getIdChart() { return idChart; }
-  public void setIdChart(Integer idChart) { this.idChart = idChart; }
+  public Integer getIdPatient() { return idPatient; }
+  public void setIdPatient(Integer idPatient) { this.idPatient = idPatient; }
 
   public String getMotif() {
 	return motif;

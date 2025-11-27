@@ -9,18 +9,18 @@ import java.util.List;
 
 @Entity
 @Table(
-    name = "chart",
+    name = "patient",
     indexes = {
-        @Index(name = "idx_chart_client_uuid", columnList = "client_uuid", unique = true),
-        @Index(name = "idx_chart_last_first", columnList = "last_name, first_name"),
-        @Index(name = "idx_chart_email", columnList = "email"),
-        @Index(name = "idx_chart_updated_at", columnList = "updated_at")
+        @Index(name = "idx_patient_client_uuid", columnList = "client_uuid", unique = true),
+        @Index(name = "idx_patient_last_first", columnList = "last_name, first_name"),
+        @Index(name = "idx_patient_email", columnList = "email"),
+        @Index(name = "idx_patient_updated_at", columnList = "updated_at")
     }
 )
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class Chart {
+public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -120,17 +120,17 @@ public class Chart {
     private String bloodType;
 
     @ElementCollection
-    @CollectionTable(name = "chart_allergy", joinColumns = @JoinColumn(name = "chart_id"))
+    @CollectionTable(name = "patient_allergy", joinColumns = @JoinColumn(name = "patient_id"))
     @Column(name = "allergy", length = 160)
     private List<String> allergies;
 
     @ElementCollection
-    @CollectionTable(name = "chart_medication", joinColumns = @JoinColumn(name = "chart_id"))
+    @CollectionTable(name = "patient_medication", joinColumns = @JoinColumn(name = "patient_id"))
     @Column(name = "medication", length = 160)
     private List<String> medications;
 
     @ElementCollection
-    @CollectionTable(name = "chart_chronic_condition", joinColumns = @JoinColumn(name = "chart_id"))
+    @CollectionTable(name = "patient_chronic_condition", joinColumns = @JoinColumn(name = "patient_id"))
     @Column(name = "condition_name", length = 160)
     private List<String> chronicConditions;
 
@@ -186,7 +186,7 @@ public class Chart {
     @Column(name = "transport_access", length = 32)     // yes/no/limited
     private String transportationAccess;
 
-    /** Portail chart */
+    /** Portail patient */
     @Column(name = "has_portal_account")
     private Boolean hasPortalAccount;
 

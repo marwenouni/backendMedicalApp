@@ -49,13 +49,13 @@ public class ConsultationService implements IConsultationService {
 	}
 
 	@Override
-	public List<Consultation> findByChart(Integer idChart) {
-		return consultationRepo.findByIdChart(idChart);
+	public List<Consultation> findByPatient(Integer idPatient) {
+		return consultationRepo.findByIdPatient(idPatient);
 	}
 
 	@Override
-	public Page<Consultation> findByChartPaged(Integer idChart, Pageable pageable) {
-		return consultationRepo.findByIdChartOrderByUpdatedAtDesc(idChart, pageable);
+	public Page<Consultation> findByPatientPaged(Integer idPatient, Pageable pageable) {
+		return consultationRepo.findByIdPatientOrderByUpdatedAtDesc(idPatient, pageable);
 	}
 
 	@Override

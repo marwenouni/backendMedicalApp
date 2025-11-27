@@ -21,9 +21,9 @@ public interface IConsultationService {
 
 	void delete(Integer id);
 
-	List<Consultation> findByChart(Integer idChart);
+	List<Consultation> findByPatient(Integer idPatient);
 
-	Page<Consultation> findByChartPaged(Integer idChart, Pageable pageable);
+	Page<Consultation> findByPatientPaged(Integer idPatient, Pageable pageable);
 
 	Page<Consultation> findUpdatedSince(Instant since, Pageable pageable);
 

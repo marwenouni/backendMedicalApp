@@ -1,11 +1,11 @@
-package com.myapp.demo.charts.api.dto;
+package com.myapp.demo.patients.api.dto;
 
 import java.util.List;
 
-public record ChartDelta(
+public record PatientDelta(
   long since,
   long next,
-  List<ChartDto> upserts,
+  List<PatientDto> upserts,
   List<Long> deletes,
   boolean hasMore
 ) {}

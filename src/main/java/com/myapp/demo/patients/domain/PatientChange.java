@@ -1,11 +1,11 @@
-package com.myapp.demo.charts.domain;
+package com.myapp.demo.patients.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "chart_changes")
-public class ChartChange {
+@Table(name = "patient_changes")
+public class PatientChange {
 
   @Id
   @Column(name = "change_id")
@@ -21,7 +21,7 @@ public class ChartChange {
   @Column(name = "changed_at", nullable = false)
   private Instant changedAt;
 
-  public ChartChange() {}
+  public PatientChange() {}
 
   // --- getters/setters requis par ton code ---
   public Long getChangeId() { return changeId; }

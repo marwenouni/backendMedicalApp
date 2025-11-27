@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IDocumentRepository extends JpaRepository<Document, Long> {
-  Page<Document> findByIdChartOrderByUpdatedAtDesc(Long idChart, Pageable pageable);
+  Page<Document> findByIdPatientOrderByUpdatedAtDesc(Long idPatient, Pageable pageable);
 
 Page<Document> findByIdConsultationOrderByUpdatedAtDesc(Long idConsultation, PageRequest of);
 }

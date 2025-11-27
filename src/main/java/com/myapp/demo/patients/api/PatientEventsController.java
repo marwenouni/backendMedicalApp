@@ -1,4 +1,4 @@
-package com.myapp.demo.charts.api;
+package com.myapp.demo.patients.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +12,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @RestController
 @RequestMapping("/events")
 @CrossOrigin
-public class ChartEventsController {
+public class PatientEventsController {
 
   private final List<SseEmitter> clients = new CopyOnWriteArrayList<>();
 
-  @GetMapping(path = "/charts", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  @GetMapping(path = "/patients", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter stream() {
     var e = new SseEmitter(0L);
     clients.add(e);
@@ -28,11 +28,11 @@ public class ChartEventsController {
     return e;
   }
 
-  /** Appelé après create/update/delete chart */
-  public void notifyChartsChanged() {
+  /** Appelé après create/update/delete patient */
+  public void notifyPatientsChanged() {
     var ts = Instant.now().toEpochMilli();
     for (var e : List.copyOf(clients)) {
-      try { e.send(SseEmitter.event().name("charts-changed").data(ts)); }
+      try { e.send(SseEmitter.event().name("patients-changed").data(ts)); }
       catch (Exception ex) { clients.remove(e); }
     }
   }

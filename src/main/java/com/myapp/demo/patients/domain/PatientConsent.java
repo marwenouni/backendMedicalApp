@@ -1,4 +1,4 @@
-package com.myapp.demo.charts.domain;
+package com.myapp.demo.patients.domain;
 
 import java.time.Instant;
 
@@ -12,11 +12,11 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity @Table(name="chart_consent")
+@Entity @Table(name="patient_consent")
 @Getter @Setter
-public class ChartConsent {
+public class PatientConsent {
 @Id private Long id;
-@MapsId @OneToOne @JoinColumn(name="core_id") private ChartCore core;
+@MapsId @OneToOne @JoinColumn(name="core_id") private PatientCore core;
 
 @Column(name="hipaa_consent_signed")      private Boolean hipaaConsentSigned = Boolean.FALSE;
 @Column(name="hipaa_consent_at")          private Instant hipaaConsentAt;
@@ -34,11 +34,11 @@ public void setId(Long id) {
 	this.id = id;
 }
 
-public ChartCore getCore() {
+public PatientCore getCore() {
 	return core;
 }
 
-public void setCore(ChartCore core) {
+public void setCore(PatientCore core) {
 	this.core = core;
 }
 

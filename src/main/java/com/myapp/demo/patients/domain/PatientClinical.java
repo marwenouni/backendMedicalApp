@@ -1,4 +1,4 @@
-package com.myapp.demo.charts.domain;
+package com.myapp.demo.patients.domain;
 
 import java.util.List;
 
@@ -23,26 +23,26 @@ import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity @Table(name="chart_clinical")
+@Entity @Table(name="patient_clinical")
 @Getter @Setter
-public class ChartClinical {
+public class PatientClinical {
 @Id private Long id;
-@MapsId @OneToOne @JoinColumn(name="core_id") private ChartCore core;
+@MapsId @OneToOne @JoinColumn(name="core_id") private PatientCore core;
 
 @Column(name="blood_type", length=8) private String bloodType;
 
 @ElementCollection
-@CollectionTable(name="chart_allergy", joinColumns=@JoinColumn(name="chart_id"))
+@CollectionTable(name="patient_allergy", joinColumns=@JoinColumn(name="patient_id"))
 @Column(name="allergy", length=160)
 private List<String> allergies;
 
 @ElementCollection
-@CollectionTable(name="chart_chronic_condition", joinColumns=@JoinColumn(name="chart_id"))
+@CollectionTable(name="patient_chronic_condition", joinColumns=@JoinColumn(name="patient_id"))
 @Column(name="condition_name", length=160)
 private List<String> chronicConditions;
 
 @ElementCollection
-@CollectionTable(name="chart_medication", joinColumns=@JoinColumn(name="chart_id"))
+@CollectionTable(name="patient_medication", joinColumns=@JoinColumn(name="patient_id"))
 @Column(name="medication", length=160)
 private List<String> medications;
 
@@ -69,11 +69,11 @@ public void setId(Long id) {
 	this.id = id;
 }
 
-public ChartCore getCore() {
+public PatientCore getCore() {
 	return core;
 }
 
-public void setCore(ChartCore core) {
+public void setCore(PatientCore core) {
 	this.core = core;
 }
 

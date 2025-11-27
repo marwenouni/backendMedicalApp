@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------------
 //  HIPAA COMPLIANCE NOTICE:
 //  This service handles PHI (Protected Health Information).
-//  Do not log, export, or comment any chart-identifying data.
+//  Do not log, export, or comment any patient-identifying data.
 //
 
-package com.myapp.demo.charts.app;
+package com.myapp.demo.patients.app;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,40 +21,40 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.myapp.demo.charts.infra.repository.ChartClinicalRepository;
-import com.myapp.demo.charts.infra.repository.ChartConsentRepository;
-import com.myapp.demo.charts.infra.repository.ChartCoreRepository;
-import com.myapp.demo.charts.infra.repository.ChartIdentityRepository;
-import com.myapp.demo.charts.infra.repository.ChartInsuranceRepository;
-import com.myapp.demo.charts.api.dto.ChartDto;
-import com.myapp.demo.charts.app.interfaces.IChartService;
-import com.myapp.demo.entity.Chart;
-import com.myapp.demo.charts.domain.ChartClinical;
-import com.myapp.demo.charts.domain.ChartConsent;
-import com.myapp.demo.charts.domain.ChartCore;
-import com.myapp.demo.charts.domain.ChartIdentity;
-import com.myapp.demo.charts.domain.ChartInsurance;
-import com.myapp.demo.charts.api.ChartEventsController;
+import com.myapp.demo.patients.infra.repository.PatientClinicalRepository;
+import com.myapp.demo.patients.infra.repository.PatientConsentRepository;
+import com.myapp.demo.patients.infra.repository.PatientCoreRepository;
+import com.myapp.demo.patients.infra.repository.PatientIdentityRepository;
+import com.myapp.demo.patients.infra.repository.PatientInsuranceRepository;
+import com.myapp.demo.patients.api.dto.PatientDto;
+import com.myapp.demo.patients.app.interfaces.IPatientService;
+import com.myapp.demo.entity.Patient;
+import com.myapp.demo.patients.domain.PatientClinical;
+import com.myapp.demo.patients.domain.PatientConsent;
+import com.myapp.demo.patients.domain.PatientCore;
+import com.myapp.demo.patients.domain.PatientIdentity;
+import com.myapp.demo.patients.domain.PatientInsurance;
+import com.myapp.demo.patients.api.PatientEventsController;
 
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class ChartService implements IChartService {
+public class PatientService implements IPatientService {
 
-	List<Chart> chart;
+	List<Patient> patient;
 
-	ChartEventsController sse;
-	private final ChartCoreRepository coreRepo;
-	private final ChartIdentityRepository idRepo;
-	private final ChartClinicalRepository clinicalRepo;
-	private final ChartInsuranceRepository insRepo;
-	private final ChartConsentRepository consentRepo;
+	PatientEventsController sse;
+	private final PatientCoreRepository coreRepo;
+	private final PatientIdentityRepository idRepo;
+	private final PatientClinicalRepository clinicalRepo;
+	private final PatientInsuranceRepository insRepo;
+	private final PatientConsentRepository consentRepo;
 
 	@Autowired
-	public ChartService(ChartCoreRepository coreRepo, ChartIdentityRepository idRepo,
-			ChartClinicalRepository clinicalRepo, ChartInsuranceRepository insRepo,
-			ChartConsentRepository consentRepo, ChartEventsController sse) {
+	public PatientService(PatientCoreRepository coreRepo, PatientIdentityRepository idRepo,
+			PatientClinicalRepository clinicalRepo, PatientInsuranceRepository insRepo,
+			PatientConsentRepository consentRepo, PatientEventsController sse) {
 		this.coreRepo = coreRepo;
 		this.idRepo = idRepo;
 		this.clinicalRepo = clinicalRepo;
@@ -63,13 +63,13 @@ public class ChartService implements IChartService {
 		this.sse = sse;
 	}
 
-	private ChartDto toDto(ChartCore core) {
+	private PatientDto toDto(PatientCore core) {
 		var i = core.getIdentity();
 		var cl = core.getClinical();
 		var ins = core.getInsurance();
 		var cs = core.getConsent();
 
-		return new ChartDto(core.getId(), core.getIdCabinet(), core.getIdProvider(), core.getClientUuid(),
+		return new PatientDto(core.getId(), core.getIdCabinet(), core.getIdProvider(), core.getClientUuid(),
 
 				// identity
 				i != null ? i.getFirstName() : null, i != null ? i.getMiddleName() : null,
@@ -121,7 +121,7 @@ public class ChartService implements IChartService {
 	}
 
 	/** charge l’aggregate complet en 1 requête (via @EntityGraph dans le repo) */
-	private Optional<ChartCore> loadAggregate(Long id) {
+	private Optional<PatientCore> loadAggregate(Long id) {
 		return coreRepo.findWithAllById(id);
 	}
 
@@ -129,37 +129,37 @@ public class ChartService implements IChartService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ChartDto> getCharts() {
+	public List<PatientDto> getPatients() {
 		// si tu as un @EntityGraph findAllWithAll(), utilise-le; sinon mappe simple:
 		return coreRepo.findAll().stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public Optional<ChartDto> getChartById(Long id) {
+	public Optional<PatientDto> getPatientById(Long id) {
 		return loadAggregate(id).map(this::toDto);
 	}
 
 	
 
 	@Transactional(readOnly = true)
-	public List<ChartDto> findAllChartByIdCabinet(Long idCabinet) {
+	public List<PatientDto> findAllPatientByIdCabinet(Long idCabinet) {
 		var cores = coreRepo.findAllByIdCabinet(idCabinet);
 		return cores.stream().map(this::toDto).toList();
 	}
 
 	@Transactional(readOnly = true)
-	public List<ChartDto> findAllChartByIdProvider(Long idProvider) {
+	public List<PatientDto> findAllPatientByIdProvider(Long idProvider) {
 		var cores = coreRepo.findAllByIdProvider(idProvider);
 		return cores.stream().map(this::toDto).toList();
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public Page<ChartDto> findAllChartByFilter(Pageable pageable) {
-		Page<ChartCore> page = coreRepo.findAll(pageable); 
+	public Page<PatientDto> findAllPatientByFilter(Pageable pageable) {
+		Page<PatientCore> page = coreRepo.findAll(pageable); 
 
-		List<ChartDto> dtos = page.getContent().stream().peek(pc -> System.out.println("core=" + pc.getId()))
+		List<PatientDto> dtos = page.getContent().stream().peek(pc -> System.out.println("core=" + pc.getId()))
 				.map(this::toDto).peek(dto -> System.out.println("dto.id=" + dto.id())).toList();
 
 		return new PageImpl<>(dtos, pageable, page.getTotalElements());
@@ -167,55 +167,55 @@ public class ChartService implements IChartService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ChartDto> findAllChartByFirstName(String firstname) {
+	public List<PatientDto> findAllPatientByFirstName(String firstname) {
 		var ids = idRepo.findByFirstNameStartingWith(firstname);
 		return ids.stream().map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore())).map(this::toDto).toList();
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public Page<ChartDto> getChartsStartingWith(String firstname, Pageable pageable) {
+	public Page<PatientDto> getPatientsStartingWith(String firstname, Pageable pageable) {
 
 		var all = idRepo.findByFirstNameStartingWith(firstname);
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), all.size());
-		List<ChartDto> slice = (start >= all.size() ? List.<ChartDto>of()
+		List<PatientDto> slice = (start >= all.size() ? List.<PatientDto>of()
 				: all.subList(start, end).stream().map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore()))
 						.map(this::toDto).toList());
 		return new PageImpl<>(slice, pageable, all.size());
 	}
 
 //	@Override
-//	public Page<Chart> getChartsStartingWith2(String firstname, Pageable pageable) {
-//		// Fetch the complete list of charts (or from another service)
-//		List<Chart> charts = chartRepo.findByFirstNameStartingWith(firstname);
+//	public Page<Patient> getPatientsStartingWith2(String firstname, Pageable pageable) {
+//		// Fetch the complete list of patients (or from another service)
+//		List<Patient> patients = patientRepo.findByFirstNameStartingWith(firstname);
 //
 //		// Create a sublist for the given page
 //		int pageSize = pageable.getPageSize();
 //		int currentPage = pageable.getPageNumber();
 //		Sort sort = pageable.getSort();
 //		int startItem = currentPage * pageSize;
-//		List<Chart> list;
+//		List<Patient> list;
 //
-//		if (charts.size() < startItem) {
+//		if (patients.size() < startItem) {
 //			list = List.of(); // Return an empty list if startItem is beyond list size
 //		} else {
-//			int toIndex = Math.min(startItem + pageSize, charts.size());
-//			list = charts.subList(startItem, toIndex);
+//			int toIndex = Math.min(startItem + pageSize, patients.size());
+//			list = patients.subList(startItem, toIndex);
 //		}
 //
 //		// Create the Page object
 //		Pageable sortAndFilter = PageRequest.of(currentPage, pageSize, sort);
-//		return new PageImpl<>(list, sortAndFilter, charts.size());
+//		return new PageImpl<>(list, sortAndFilter, patients.size());
 //	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public Page<ChartDto> getChartsByFirstNameContaining(String firstname, Pageable pageable) {
+	public Page<PatientDto> getPatientsByFirstNameContaining(String firstname, Pageable pageable) {
 		var all = idRepo.findByFirstNameContaining(firstname);
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), all.size());
-		List<ChartDto> slice = (start >= all.size() ? List.<ChartDto>of()
+		List<PatientDto> slice = (start >= all.size() ? List.<PatientDto>of()
 				: all.subList(start, end).stream().map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore()))
 						.map(this::toDto).toList());
 		return new PageImpl<>(slice, pageable, all.size());
@@ -226,18 +226,18 @@ public class ChartService implements IChartService {
 	 *
 	 * @param chaine     de caractére
 	 * @param pagination
-	 * @return list of charts
+	 * @return list of patients
 	 */
 
 	@Transactional(readOnly = true)
 	@Override
-	public Page<ChartDto> getChartsByFirstNameAndLastNameContaining(String firstname, String lastname,
+	public Page<PatientDto> getPatientsByFirstNameAndLastNameContaining(String firstname, String lastname,
 			Pageable pageable, String sort, String filter) {
 
 		// stratégie simple : union puis intersection sur les IDs
-		Set<Long> byFirst = idRepo.findByFirstNameContaining(firstname).stream().map(ChartIdentity::getId)
+		Set<Long> byFirst = idRepo.findByFirstNameContaining(firstname).stream().map(PatientIdentity::getId)
 				.collect(Collectors.toSet());
-		Set<Long> byLast = idRepo.findByLastNameContaining(lastname).stream().map(ChartIdentity::getId)
+		Set<Long> byLast = idRepo.findByLastNameContaining(lastname).stream().map(PatientIdentity::getId)
 				.collect(Collectors.toSet());
 
 		Set<Long> ids;
@@ -249,18 +249,18 @@ public class ChartService implements IChartService {
 		}
 
 		// chargement, mapping, tri basique
-		List<ChartDto> all = ids.stream().map(this::getChartById) // Optional<ChartDto>
+		List<PatientDto> all = ids.stream().map(this::getPatientById) // Optional<PatientDto>
 				.filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 
-		Comparator<ChartDto> cmp = Comparator.comparing(ChartDto::id, Comparator.nullsLast(Long::compareTo));
+		Comparator<PatientDto> cmp = Comparator.comparing(PatientDto::id, Comparator.nullsLast(Long::compareTo));
 		if ("FirstName".equalsIgnoreCase(filter))
-			cmp = Comparator.comparing(ChartDto::firstName, Comparator.nullsLast(String::compareToIgnoreCase));
+			cmp = Comparator.comparing(PatientDto::firstName, Comparator.nullsLast(String::compareToIgnoreCase));
 		if ("Birthday".equalsIgnoreCase(filter))
-			cmp = Comparator.comparing(ChartDto::birthday, Comparator.nullsLast(LocalDate::compareTo));
+			cmp = Comparator.comparing(PatientDto::birthday, Comparator.nullsLast(LocalDate::compareTo));
 		if ("City".equalsIgnoreCase(filter))
-			cmp = Comparator.comparing(ChartDto::city, Comparator.nullsLast(String::compareToIgnoreCase));
+			cmp = Comparator.comparing(PatientDto::city, Comparator.nullsLast(String::compareToIgnoreCase));
 		if ("Id".equalsIgnoreCase(filter))
-			cmp = Comparator.comparing(ChartDto::id, Comparator.nullsLast(Long::compareTo));
+			cmp = Comparator.comparing(PatientDto::id, Comparator.nullsLast(Long::compareTo));
 		if ("DESC".equalsIgnoreCase(sort))
 			cmp = cmp.reversed();
 
@@ -268,61 +268,61 @@ public class ChartService implements IChartService {
 
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), all.size());
-		List<ChartDto> slice = (start >= all.size()) ? List.of() : all.subList(start, end);
+		List<PatientDto> slice = (start >= all.size()) ? List.of() : all.subList(start, end);
 		return new PageImpl<>(slice, pageable, all.size());
 	}
 
 //	@Override
-//	public Page<Chart> getChartsByFirstNameAndLastNameContaining2(String firstname, String lastname,
+//	public Page<Patient> getPatientsByFirstNameAndLastNameContaining2(String firstname, String lastname,
 //			Pageable pageable, String sort, String filter) {
-//		// Fetch the complete list of charts (or from another service)
-//		Set<Chart> set, set2;
+//		// Fetch the complete list of patients (or from another service)
+//		Set<Patient> set, set2;
 //		if (!(lastname.length() > 0)) {
-//			List<Chart> chartsByFirstName = chartRepo.findByFirstNameContainingAndLastNameContaining(firstname,
+//			List<Patient> patientsByFirstName = patientRepo.findByFirstNameContainingAndLastNameContaining(firstname,
 //					lastname);
-//			List<Chart> chartsByLastName = chartRepo.findByFirstNameContainingAndLastNameContaining(lastname,
+//			List<Patient> patientsByLastName = patientRepo.findByFirstNameContainingAndLastNameContaining(lastname,
 //					firstname);
-//			set = new HashSet<>(chartsByFirstName);
-//			set.addAll(chartsByLastName);
+//			set = new HashSet<>(patientsByFirstName);
+//			set.addAll(patientsByLastName);
 //		} else {
-//			List<Chart> chartsByFirstName = chartRepo.findByFirstName(firstname);
-//			List<Chart> chartsByLastName = chartRepo.findByLastName(firstname);
+//			List<Patient> patientsByFirstName = patientRepo.findByFirstName(firstname);
+//			List<Patient> patientsByLastName = patientRepo.findByLastName(firstname);
 //
-//			List<Chart> chartsByFirstName2 = chartRepo.findByFirstNameStartingWith(lastname);
-//			List<Chart> chartsByLastName2 = chartRepo.findByLastNameStartingWith(lastname);
+//			List<Patient> patientsByFirstName2 = patientRepo.findByFirstNameStartingWith(lastname);
+//			List<Patient> patientsByLastName2 = patientRepo.findByLastNameStartingWith(lastname);
 //
-//			set = new HashSet<>(chartsByFirstName);
-//			set.addAll(chartsByLastName);
+//			set = new HashSet<>(patientsByFirstName);
+//			set.addAll(patientsByLastName);
 //
-//			set2 = new HashSet<>(chartsByFirstName2);
-//			set2.addAll(chartsByLastName2);
+//			set2 = new HashSet<>(patientsByFirstName2);
+//			set2.addAll(patientsByLastName2);
 //
 //			set.retainAll(set2);
 //		}
 //
 //		// Convertir l'ensemble en une liste
-//		List<Chart> charts = new ArrayList<>(set);
-//		List<Chart> sortedList=null;
-//		// Sort the list by Chart ID
+//		List<Patient> patients = new ArrayList<>(set);
+//		List<Patient> sortedList=null;
+//		// Sort the list by Patient ID
 //		switch (filter) {
 //		case "FirstName": {
 //
-//			sortedList = charts.stream().sorted(Comparator.comparing(Chart::getFirstName))
+//			sortedList = patients.stream().sorted(Comparator.comparing(Patient::getFirstName))
 //					.collect(Collectors.toList());
 //		}
 //		case "Birthday": {
 //
-//			sortedList = charts.stream().sorted(Comparator.comparing(Chart::getBirthday))
+//			sortedList = patients.stream().sorted(Comparator.comparing(Patient::getBirthday))
 //					.collect(Collectors.toList());
 //		}
 //		case "City": {
 //
-//			sortedList = charts.stream().sorted(Comparator.comparing(Chart::getCity))
+//			sortedList = patients.stream().sorted(Comparator.comparing(Patient::getCity))
 //					.collect(Collectors.toList());
 //		}
 //		case "Id": {
 //
-//			sortedList = charts.stream().sorted(Comparator.comparing(Chart::getId))
+//			sortedList = patients.stream().sorted(Comparator.comparing(Patient::getId))
 //					.collect(Collectors.toList());
 //		}}
 //		
@@ -335,7 +335,7 @@ public class ChartService implements IChartService {
 //		int pageSize = pageable.getPageSize();
 //		int currentPage = pageable.getPageNumber();
 //		int startItem = currentPage * pageSize;
-//		List<Chart> pageList;
+//		List<Patient> pageList;
 //
 //		if (sortedList.size() < startItem) {
 //			pageList = List.of(); // Return an empty list if startItem is beyond list size
@@ -352,22 +352,22 @@ public class ChartService implements IChartService {
 	/* ===================== CREATE / UPDATE ===================== */
 
 	@Override
-	public ChartDto add(ChartDto dto) {
+	public PatientDto add(PatientDto dto) {
 		var core = createOrGetCore(dto);
 		upsertIdentity(core, dto);
 		upsertClinical(core, dto);
 		upsertInsurance(core, dto);
 		upsertConsent(core, dto);
 		if (sse != null)
-			sse.notifyChartsChanged();
+			sse.notifyPatientsChanged();
 		return toDto(coreRepo.findWithAllById(core.getId()).orElse(core));
 	}
 
 	@Override
-	public ChartDto update(ChartDto dto) {
+	public PatientDto update(PatientDto dto) {
 		if (dto.id() == null)
 			throw new IllegalArgumentException("id is required for update");
-		var core = coreRepo.findById(dto.id()).orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Chart id="+dto.id()+" not found"));
+		var core = coreRepo.findById(dto.id()).orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Patient id="+dto.id()+" not found"));
 		upsertIdentity(core, dto);
 		upsertClinical(core, dto);
 		upsertInsurance(core, dto);
@@ -375,7 +375,7 @@ public class ChartService implements IChartService {
 		core.setIdCabinet(dto.idCabinet());
 		core.setIdProvider(dto.idProvider());
 		if (sse != null)
-			sse.notifyChartsChanged();
+			sse.notifyPatientsChanged();
 		return toDto(coreRepo.findWithAllById(core.getId()).orElse(core));
 	}
 	
@@ -391,25 +391,25 @@ public class ChartService implements IChartService {
 		idRepo.deleteById(lid);
 		coreRepo.deleteById(lid);
 		if (sse != null)
-			sse.notifyChartsChanged();
+			sse.notifyPatientsChanged();
 	}
 
 	@Override
-	public ChartDto createIdempotent(ChartDto dto) {
+	public PatientDto createIdempotent(PatientDto dto) {
 		var core = createOrGetCore(dto);
 		return toDto(coreRepo.findWithAllById(core.getId()).orElse(core));
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public Optional<ChartDto> findByClientUuid(String clientUuid) {
+	public Optional<PatientDto> findByClientUuid(String clientUuid) {
 		return coreRepo.findByClientUuid(clientUuid).map(this::toDto);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ChartDto> findUpdated(Instant since) {
-	    List<ChartCore> cores = coreRepo.findByUpdatedAtAfter(since);
+	public List<PatientDto> findUpdated(Instant since) {
+	    List<PatientCore> cores = coreRepo.findByUpdatedAtAfter(since);
 	    return cores.stream()
 	                .map(this::toDto)
 	                .toList();
@@ -418,28 +418,28 @@ public class ChartService implements IChartService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ChartDto> findAllChartByLastName(String lastname) {
+	public List<PatientDto> findAllPatientByLastName(String lastname) {
 		return idRepo.findByLastNameContaining(lastname).stream()
 				.map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore())).map(this::toDto).toList();
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ChartDto> findAllChartByBirthday(LocalDate birthday) {
+	public List<PatientDto> findAllPatientByBirthday(LocalDate birthday) {
 		return idRepo.findByBirthday(birthday).stream().map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore()))
 				.map(this::toDto).toList();
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<ChartDto> findAllChartByPhoneMobile(String phone) {
+	public List<PatientDto> findAllPatientByPhoneMobile(String phone) {
 		return idRepo.findByPhoneMobile(phone).stream().map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore()))
 				.map(this::toDto).toList();
 	}
 
 //	  @Transactional(readOnly = true)
 //	  @Override
-//	  public List<ChartDto> findByBirthdayPrefix(String prefix) {
+//	  public List<PatientDto> findByBirthdayPrefix(String prefix) {
 //	    // si tu gardes la table de dates en identity, expose une méthode dans idRepo
 //	    return idRepo.searchByBirthdayPrefix(prefix).stream()
 //	        .map(pi -> loadAggregate(pi.getId()).orElse(pi.getCore()))
@@ -447,10 +447,10 @@ public class ChartService implements IChartService {
 //	        .toList();
 //	  }
 //	  
-//	  Page<ChartDto> searchByBirthdayPrefix(String prefix, Pageable pageable) {
-//		  Page<ChartIdentity> page = idRepo.searchByBirthdayPrefix(prefix, pageable);
+//	  Page<PatientDto> searchByBirthdayPrefix(String prefix, Pageable pageable) {
+//		  Page<PatientIdentity> page = idRepo.searchByBirthdayPrefix(prefix, pageable);
 //
-//		  List<ChartDto> dtos = page.getContent().stream()
+//		  List<PatientDto> dtos = page.getContent().stream()
 //		      .map(id -> {
 //		        var core = coreRepo.findById(id.getCoreId()).orElse(null);
 //		        var clinical = clinicalRepo.findByCoreId(id.getCoreId()).orElse(null);
@@ -466,19 +466,19 @@ public class ChartService implements IChartService {
 	/* ===================== Internal upserts ===================== */
 
 	@Transactional
-	private ChartCore createOrGetCore(ChartDto dto) {
+	private PatientCore createOrGetCore(PatientDto dto) {
 		// 1) Résoudre/normaliser le UUID
 		final String uuid = (dto.clientUuid() != null && !dto.clientUuid().isBlank()) ? dto.clientUuid()
 				: java.util.UUID.randomUUID().toString();
 
 		// 2) Essayer de retrouver un core existant
 		var existing = coreRepo.findByClientUuid(uuid);
-		ChartCore core;
+		PatientCore core;
 		if (existing.isPresent()) {
 			core = existing.get();
 		} else {
 			// 3) Créer le core et flusher pour obtenir l'ID (nécessaire pour @MapsId)
-			core = new ChartCore();
+			core = new PatientCore();
 			core.setIdCabinet(dto.idCabinet());
 			core.setClientUuid(uuid);
 			core.setIdProvider(dto.idProvider());
@@ -488,7 +488,7 @@ public class ChartService implements IChartService {
 		}
 
 		if (core.getIdentity() == null) {
-			var id = new ChartIdentity();
+			var id = new PatientIdentity();
 			id.setCore(core);
 			id.setFirstName(dto.firstName());
 			id.setMiddleName(dto.middleName());
@@ -518,7 +518,7 @@ public class ChartService implements IChartService {
 		}
 
 		if (core.getClinical() == null) {
-			var cl = new ChartClinical();
+			var cl = new PatientClinical();
 			cl.setCore(core);
 			
 			cl.setHeightCm(dto.heightCm());
@@ -542,7 +542,7 @@ public class ChartService implements IChartService {
 		}
 
 		if (core.getInsurance() == null) {
-			var ins = new ChartInsurance();
+			var ins = new PatientInsurance();
 			ins.setCore(core);
 			
 			ins.setProvider(dto.insuranceProvider());
@@ -555,7 +555,7 @@ public class ChartService implements IChartService {
 		}
 
 		if (core.getConsent() == null) {
-			var cs = new ChartConsent();
+			var cs = new PatientConsent();
 			cs.setCore(core);
 			
 			cs.setHipaaConsentSigned(Boolean.TRUE.equals(dto.hipaaConsentSigned()));
@@ -571,8 +571,8 @@ public class ChartService implements IChartService {
 		return core;
 	}
 
-	private void upsertIdentity(ChartCore core, ChartDto dto) {
-		var id = core.getIdentity() != null ? core.getIdentity() : new ChartIdentity();
+	private void upsertIdentity(PatientCore core, PatientDto dto) {
+		var id = core.getIdentity() != null ? core.getIdentity() : new PatientIdentity();
 		id.setCore(core);
 		id.setFirstName(dto.firstName() != null ? dto.firstName() : id.getFirstName());
 		id.setMiddleName(dto.middleName() != null ? dto.middleName() : id.getMiddleName());
@@ -604,8 +604,8 @@ public class ChartService implements IChartService {
 		core.setIdentity(id);
 	}
 
-	private void upsertClinical(ChartCore core, ChartDto dto) {
-		var cl = core.getClinical() != null ? core.getClinical() : new ChartClinical();
+	private void upsertClinical(PatientCore core, PatientDto dto) {
+		var cl = core.getClinical() != null ? core.getClinical() : new PatientClinical();
 		cl.setCore(core);
 
 		cl.setHeightCm(dto.heightCm() != null ? dto.heightCm() : cl.getHeightCm());
@@ -628,8 +628,8 @@ public class ChartService implements IChartService {
 		core.setClinical(cl);
 	}
 
-	private void upsertInsurance(ChartCore core, ChartDto dto) {
-		var ins = core.getInsurance() != null ? core.getInsurance() : new ChartInsurance();
+	private void upsertInsurance(PatientCore core, PatientDto dto) {
+		var ins = core.getInsurance() != null ? core.getInsurance() : new PatientInsurance();
 		ins.setCore(core);
 
 		ins.setProvider(dto.insuranceProvider() != null ? dto.insuranceProvider() : ins.getProvider());
@@ -641,8 +641,8 @@ public class ChartService implements IChartService {
 		core.setInsurance(ins);
 	}
 
-	private void upsertConsent(ChartCore core, ChartDto dto) {
-		var cs = core.getConsent() != null ? core.getConsent() : new ChartConsent();
+	private void upsertConsent(PatientCore core, PatientDto dto) {
+		var cs = core.getConsent() != null ? core.getConsent() : new PatientConsent();
 		cs.setCore(core);
 
 		cs.setHipaaConsentSigned(

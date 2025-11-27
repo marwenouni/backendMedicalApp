@@ -1,4 +1,4 @@
-package com.myapp.demo.patients.domain;
+package com.myapp.demo.charts.domain;
 
 
 import java.time.Instant;
@@ -15,16 +15,16 @@ import lombok.Setter;
 import jakarta.persistence.Index;
 
 
-@Entity @Table(name="patient_identity",
+@Entity @Table(name="chart_identity",
 indexes = {
  @Index(name="idx_ident_last_first", columnList="last_name, first_name"),
  @Index(name="idx_ident_email", columnList="email")
 })
 @Getter @Setter
-public class PatientIdentity {
+public class ChartIdentity {
 @Id private Long id;
 
-@MapsId @OneToOne @JoinColumn(name="core_id") private PatientCore core;
+@MapsId @OneToOne @JoinColumn(name="core_id") private ChartCore core;
 
 @Column(name="first_name", length=80)   private String firstName;
 @Column(name="middle_name", length=80)  private String middleName;
@@ -63,10 +63,10 @@ public Long getId() {
 public void setId(Long id) {
 	this.id = id;
 }
-public PatientCore getCore() {
+public ChartCore getCore() {
 	return core;
 }
-public void setCore(PatientCore core) {
+public void setCore(ChartCore core) {
 	this.core = core;
 }
 public String getFirstName() {

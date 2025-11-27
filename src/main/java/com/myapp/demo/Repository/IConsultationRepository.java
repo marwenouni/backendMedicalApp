@@ -19,9 +19,9 @@ public interface IConsultationRepository  extends JpaRepository<Consultation, Lo
 
 	void deleteById(Integer id);
 
-	List<Consultation> findByIdPatient(Integer idPatient);
+	List<Consultation> findByIdChart(Integer idChart);
 
-	Page<Consultation> findByIdPatientOrderByUpdatedAtDesc(Integer idPatient, Pageable pageable);
+	Page<Consultation> findByIdChartOrderByUpdatedAtDesc(Integer idChart, Pageable pageable);
 
 	Page<Consultation> findByUpdatedAtAfterOrderByUpdatedAtAsc(Instant since, Pageable pageable);
 

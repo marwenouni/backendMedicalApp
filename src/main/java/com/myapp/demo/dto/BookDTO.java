@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class BookDTO {
   private Long cabinetId;
-  private Long patientId;
+  private Long chartId;
   private String startAt;   // ISO instant
   private String endAt;     // ISO instant
   private String motif;
@@ -17,11 +17,11 @@ public Long getCabinetId() {
 public void setCabinetId(Long cabinetId) {
 	this.cabinetId = cabinetId;
 }
-public Long getPatientId() {
-	return patientId;
+public Long getChartId() {
+	return chartId;
 }
-public void setPatientId(Long patientId) {
-	this.patientId = patientId;
+public void setChartId(Long chartId) {
+	this.chartId = chartId;
 }
 public String getStartAt() {
 	return startAt;

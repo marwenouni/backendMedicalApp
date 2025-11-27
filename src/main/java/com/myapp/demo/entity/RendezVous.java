@@ -7,7 +7,7 @@ import java.time.Instant;
 @Table(name = "rendez_vous",
        indexes = {
          @Index(columnList = "cabinet_id,start_at"),
-         @Index(columnList = "patient_id"),
+         @Index(columnList = "chart_id"),
          @Index(columnList = "client_uuid", unique = true)
        })
 public class RendezVous {
@@ -17,8 +17,8 @@ public class RendezVous {
   @Column(name = "cabinet_id", nullable = false)
   private Long cabinetId;
 
-  @Column(name = "patient_id", nullable = false)
-  private Long patientId;
+  @Column(name = "chart_id", nullable = false)
+  private Long chartId;
 
   @Column(name = "start_at", nullable = false)
   private Instant startAt;
@@ -66,12 +66,12 @@ public void setCabinetId(Long cabinetId) {
 	this.cabinetId = cabinetId;
 }
 
-public Long getPatientId() {
-	return patientId;
+public Long getChartId() {
+	return chartId;
 }
 
-public void setPatientId(Long patientId) {
-	this.patientId = patientId;
+public void setChartId(Long chartId) {
+	this.chartId = chartId;
 }
 
 public Instant getStartAt() {

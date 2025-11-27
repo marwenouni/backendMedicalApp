@@ -95,7 +95,7 @@ public class RdvService implements IRdvService {
 	@Override
 	@Transactional
 	public RdvDTO book(BookDTO dto) {
-		if (dto.getCabinetId() == null || dto.getPatientId() == null || dto.getStartAt() == null
+		if (dto.getCabinetId() == null || dto.getChartId() == null || dto.getStartAt() == null
 				|| dto.getEndAt() == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing fields");
 		}
@@ -120,7 +120,7 @@ public class RdvService implements IRdvService {
 
 		RendezVous r = new RendezVous();
 		r.setCabinetId(dto.getCabinetId());
-		r.setPatientId(dto.getPatientId());
+		r.setChartId(dto.getChartId());
 		r.setStartAt(s);
 		r.setEndAt(e);
 		r.setStatus(RendezVous.Status.BOOKED);

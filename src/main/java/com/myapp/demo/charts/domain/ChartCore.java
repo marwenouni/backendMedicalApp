@@ -1,4 +1,4 @@
-package com.myapp.demo.patients.domain;
+package com.myapp.demo.charts.domain;
 
 import java.time.Instant;
 
@@ -17,13 +17,13 @@ import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.Index;
 
-@Entity @Table(name="patient_core",
+@Entity @Table(name="chart_core",
 indexes = {
  @Index(name="idx_core_client_uuid", columnList="client_uuid", unique=true),
  @Index(name="idx_core_updated_at", columnList="updated_at")
 })
 @Getter @Setter
-public class PatientCore {
+public class ChartCore {
 @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
 
@@ -45,13 +45,13 @@ private Long id;
 
 // Agrégations 1–1
 @OneToOne(mappedBy="core", cascade=CascadeType.ALL, optional=false, orphanRemoval=true)
-private PatientIdentity identity;
+private ChartIdentity identity;
 @OneToOne(mappedBy="core", cascade=CascadeType.ALL, optional=false, orphanRemoval=true)
-private PatientClinical clinical;
+private ChartClinical clinical;
 @OneToOne(mappedBy="core", cascade=CascadeType.ALL, optional=false, orphanRemoval=true)
-private PatientInsurance insurance;
+private ChartInsurance insurance;
 @OneToOne(mappedBy="core", cascade=CascadeType.ALL, optional=false, orphanRemoval=true)
-private PatientConsent consent;
+private ChartConsent consent;
 
 public Long getId() {
 	return id;
@@ -107,28 +107,28 @@ public Long getVersion() {
 public void setVersion(Long version) {
 	this.version = version;
 }
-public PatientIdentity getIdentity() {
+public ChartIdentity getIdentity() {
 	return identity;
 }
-public void setIdentity(PatientIdentity identity) {
+public void setIdentity(ChartIdentity identity) {
 	this.identity = identity;
 }
-public PatientClinical getClinical() {
+public ChartClinical getClinical() {
 	return clinical;
 }
-public void setClinical(PatientClinical clinical) {
+public void setClinical(ChartClinical clinical) {
 	this.clinical = clinical;
 }
-public PatientInsurance getInsurance() {
+public ChartInsurance getInsurance() {
 	return insurance;
 }
-public void setInsurance(PatientInsurance insurance) {
+public void setInsurance(ChartInsurance insurance) {
 	this.insurance = insurance;
 }
-public PatientConsent getConsent() {
+public ChartConsent getConsent() {
 	return consent;
 }
-public void setConsent(PatientConsent consent) {
+public void setConsent(ChartConsent consent) {
 	this.consent = consent;
 }
 public Long getIdProvider() {

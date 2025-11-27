@@ -2,9 +2,9 @@ package com.myapp.demo.controller;
 
 import com.myapp.demo.Repository.IConsultationRepository;
 import com.myapp.demo.Repository.IDocumentRepository;
-import com.myapp.demo.Repository.IPatientRepository;
+import com.myapp.demo.Repository.IChartRepository;
 import com.myapp.demo.entity.Consultation;
-import com.myapp.demo.entity.Patient;
+import com.myapp.demo.entity.Chart;
 import com.myapp.demo.service.IConsultationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -38,12 +38,12 @@ public class ConsultationController {
 		return ResponseEntity.ok(Map.of("consultations", list));
 	}
 
-	// --- GET by patient (paginé) ---
-	@GetMapping("/by-patient")
-	public ResponseEntity<Map<String, Object>> byPatient(@RequestParam Integer idPatient,
+	// --- GET by chart (paginé) ---
+	@GetMapping("/by-chart")
+	public ResponseEntity<Map<String, Object>> byChart(@RequestParam Integer idChart,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
 		Pageable paging = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "updatedAt"));
-		Page<Consultation> res = consultationService.findByPatientPaged(idPatient, paging);
+		Page<Consultation> res = consultationService.findByChartPaged(idChart, paging);
 
 		Map<String, Object> body = new HashMap<>();
 		body.put("consultations", res.getContent());
@@ -106,7 +106,7 @@ System.out.println("execution api");
 		current.setExamen(c.getExamen());
 		current.setDate(c.getDate());
 		current.setIdCabinet(c.getIdCabinet());
-		current.setIdPatient(c.getIdPatient());
+		current.setIdChart(c.getIdChart());
 
 		Consultation saved = consultationService.update(current);
 		return ResponseEntity.ok(Map.of("consultations", saved));

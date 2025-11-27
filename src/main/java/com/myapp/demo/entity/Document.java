@@ -13,7 +13,7 @@ public class Document {
   private Long id;
 
   private Long idCabinet;          // optionnel pour multi-tenant
-  private Long idPatient;
+  private Long idChart;
   private Long idConsultation;
 
   private String type;             // PHOTO | COMPTE_RENDU | ORDONNANCE | AUTRE
@@ -44,11 +44,11 @@ public Long getIdCabinet() {
 public void setIdCabinet(Long idCabinet) {
 	this.idCabinet = idCabinet;
 }
-public Long getIdPatient() {
-	return idPatient;
+public Long getIdChart() {
+	return idChart;
 }
-public void setIdPatient(Long idPatient) {
-	this.idPatient = idPatient;
+public void setIdChart(Long idChart) {
+	this.idChart = idChart;
 }
 public Long getIdConsultation() {
 	return idConsultation;

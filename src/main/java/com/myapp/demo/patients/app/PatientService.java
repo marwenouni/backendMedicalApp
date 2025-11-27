@@ -4,8 +4,7 @@
 //  Do not log, export, or comment any patient-identifying data.
 //
 
-package com.myapp.demo.patients.app
-;
+package com.myapp.demo.patients.app;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,19 +21,20 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.myapp.demo.Repository.patient.PatientClinicalRepository;
-import com.myapp.demo.Repository.patient.PatientConsentRepository;
-import com.myapp.demo.Repository.patient.PatientCoreRepository;
-import com.myapp.demo.Repository.patient.PatientIdentityRepository;
-import com.myapp.demo.Repository.patient.PatientInsuranceRepository;
-import com.myapp.demo.controller.PatientsEventsController;
-import com.myapp.demo.dto.PatientDto;
+import com.myapp.demo.patients.infra.repository.PatientClinicalRepository;
+import com.myapp.demo.patients.infra.repository.PatientConsentRepository;
+import com.myapp.demo.patients.infra.repository.PatientCoreRepository;
+import com.myapp.demo.patients.infra.repository.PatientIdentityRepository;
+import com.myapp.demo.patients.infra.repository.PatientInsuranceRepository;
+import com.myapp.demo.patients.api.dto.PatientDto;
+import com.myapp.demo.patients.app.interfaces.IPatientService;
 import com.myapp.demo.entity.Patient;
-import com.myapp.demo.entity.patient.PatientClinical;
-import com.myapp.demo.entity.patient.PatientConsent;
-import com.myapp.demo.entity.patient.PatientCore;
-import com.myapp.demo.entity.patient.PatientIdentity;
-import com.myapp.demo.entity.patient.PatientInsurance;
+import com.myapp.demo.patients.domain.PatientClinical;
+import com.myapp.demo.patients.domain.PatientConsent;
+import com.myapp.demo.patients.domain.PatientCore;
+import com.myapp.demo.patients.domain.PatientIdentity;
+import com.myapp.demo.patients.domain.PatientInsurance;
+import com.myapp.demo.patients.api.PatientsEventsController;
 
 import org.springframework.transaction.annotation.Transactional;
 

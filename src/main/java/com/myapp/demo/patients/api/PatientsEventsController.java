@@ -1,4 +1,4 @@
-package com.myapp.demo.controller;
+package com.myapp.demo.patients.api;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

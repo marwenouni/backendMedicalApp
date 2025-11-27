@@ -1,8 +1,5 @@
 package com.myapp.demo.patients.api.dto;
 
-import com.myapp.demo.entity.Patient;
-import com.myapp.demo.entity.patient.PatientCore;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,32 +34,6 @@ public record PatientDto(Long id, Long idCabinet, Long idProvider,String clientU
 
 		// derniers rendez-vous
 		Instant lastEncounterAt, Instant nextAppointmentAt,Long version,Instant updatedAt) {
-
-//	public static PatientDto from(Patient p) {
-//
-//		if (p == null)
-//			return null;
-//
-//		return new PatientDto(p.getId(), p.getIdCabinet(), p.getClientUuid(), p.getFirstName(), p.getMiddleName(),
-//				p.getLastName(), p.getPreferredName(), p.getGender(), p.getBirthday(), p.getPhoneMobile(),
-//				p.getPhoneHome(), p.getEmail(), p.getCity(), p.getState(),
-//
-//				p.getPrimaryInsurance() != null ? p.getPrimaryInsurance().getProvider() : null,
-//				p.getPrimaryInsurance() != null ? p.getPrimaryInsurance().getMemberId() : null,
-//				p.getPrimaryInsurance() != null ? p.getPrimaryInsurance().getPlanName() : null,
-//				p.getPrimaryInsurance() != null && p.getPrimaryInsurance().getExpirationDate() != null
-//						? p.getPrimaryInsurance().getExpirationDate().toString()
-//						: null,
-//
-//				p.getHipaaConsentSigned(), p.getHipaaConsentAt(), p.getTelehealthConsentSigned(),
-//				p.getDataSharingConsent(), p.getHeightCm(), p.getWeightKg(), p.getSmokingStatus(), p.getAlcoholUse(),
-//
-//				// SDOH
-//				p.getOccupation(), p.getEmployer(), p.getHousingStatus(), p.getFinancialStrain(),
-//				p.getTransportationAccess(), p.getAllergies(), p.getChronicConditions(),
-//
-//				p.getLastEncounterAt(), p.getNextAppointmentAt());
-//	}
 
 	public Long id() {
 		return id;

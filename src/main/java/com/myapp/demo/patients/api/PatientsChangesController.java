@@ -1,11 +1,11 @@
-package com.myapp.demo.controller;
+package com.myapp.demo.patients.api;
 
 import com.myapp.demo.Repository.IPatientRepository;
 import com.myapp.demo.Repository.PatientChangeRepository;
-import com.myapp.demo.dto.PatientDelta;
-import com.myapp.demo.dto.PatientDto;
+import com.myapp.demo.patients.api.dto.PatientDto;
 import com.myapp.demo.entity.Patient;
 import com.myapp.demo.entity.PatientChange;
+import com.myapp.demo.patients.api.dto.PatientDelta;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

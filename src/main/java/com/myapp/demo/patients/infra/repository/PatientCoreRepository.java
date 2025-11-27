@@ -1,4 +1,4 @@
-package com.myapp.demo.Repository.patient;
+package com.myapp.demo.patients.infra.repository;
 
 
 import org.springframework.data.domain.Page;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.myapp.demo.entity.patient.PatientCore;
+import com.myapp.demo.patients.domain.PatientCore;
 
 import java.time.Instant;
 import java.util.List;

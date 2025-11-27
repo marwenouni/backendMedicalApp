@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.myapp.demo.dto.PatientDto;
-import com.myapp.demo.service.IPatientService;
+import com.myapp.demo.patients.api.dto.PatientDto;
+import com.myapp.demo.patients.app.interfaces.IPatientService;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;

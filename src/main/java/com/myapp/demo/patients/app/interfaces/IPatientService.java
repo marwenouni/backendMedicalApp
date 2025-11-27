@@ -8,9 +8,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.myapp.demo.dto.PatientDto;
-import com.myapp.demo.entity.Patient;
-import com.myapp.demo.entity.patient.PatientCore;
+import com.myapp.demo.patients.api.dto.PatientDto;
 
 public interface IPatientService {
 	

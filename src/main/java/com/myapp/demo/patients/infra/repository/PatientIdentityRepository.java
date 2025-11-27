@@ -1,18 +1,13 @@
-package com.myapp.demo.Repository.patient;
+package com.myapp.demo.patients.infra.repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.util.Streamable;
-
-import com.myapp.demo.dto.PatientDto;
-import com.myapp.demo.entity.Patient;
-import com.myapp.demo.entity.patient.PatientIdentity;
+import com.myapp.demo.patients.domain.PatientIdentity;
 
 public interface PatientIdentityRepository extends JpaRepository<PatientIdentity, Long> {
 

@@ -2,6 +2,7 @@ package com.myapp.demo.Repository;
 
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,16 +11,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.util.Streamable;
 
 import com.myapp.demo.entity.Patient;
 
 public interface IPatientRepository extends JpaRepository<Patient, Long> {
-	Optional<Patient> findByEmail(String email);
+	
+	Patient findByEmail(String email);
 
 	List<Patient> findAll();
 	
-
+   Optional<Patient>	 findById(long id);
+	
 	List<Patient> findByFirstName(String firstname);
 
 	
@@ -31,7 +36,7 @@ public interface IPatientRepository extends JpaRepository<Patient, Long> {
 	
 	List<Patient> getPatientsByLastNameContaining(String firstname);
 
-	List<Patient> findByBirthdayStartingWith(String birthday);
+	//Page<Patient> findByBirthdayStartingWith(String birthday,Pageable page);
 
 	List<Patient> findByFirstNameAndLastName(String firstname, String firstname2);
 
@@ -51,15 +56,34 @@ public interface IPatientRepository extends JpaRepository<Patient, Long> {
 
 	Patient getById(int i);
 
-	List<Patient> findByBirthday(String birthday);
+	List<Patient> findByBirthday(LocalDate birthday);
 	
-	List<Patient> findByNumberPhone(String phonenumber);
+	List<Patient> findByphoneMobile(String phonenumber);
 
 	void deleteById(int id);
 
 	Page<Patient> findByUpdatedAtAfter(Instant since, Pageable paging);
-
-
 	
-
+	@Query(
+		    value = """
+		      select *
+		      from patient p
+		      where date_format(p.birthday, '%d/%m/%Y') like concat(:prefix, '%')
+		    """,
+		    countQuery = """
+		      select count(*)
+		      from patient p
+		      where date_format(p.birthday, '%d/%m/%Y') like concat(:prefix, '%')
+		    """,
+		    nativeQuery = true
+		  )
+		  Page<Patient> searchByBirthdayPrefix(@Param("prefix") String prefix, Pageable pageable);
+		
+	
+	@Query(value = """
+			  select *
+			  from patient p
+			  where date_format(p.birthday, '%d/%m/%Y') like concat(:prefix, '%')
+			""", nativeQuery = true)
+			List<Patient> searchByBirthdayPrefix(@Param("prefix") String prefix);
 }

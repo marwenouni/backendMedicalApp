@@ -1,0 +1,71 @@
+-- ===============================
+-- 1️⃣ Table principale : patient_core
+-- ===============================
+CREATE TABLE patient_core (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  id_cabinet BIGINT,
+  client_uuid VARCHAR(64) NOT NULL UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===============================
+-- 2️⃣ Identité du patient
+-- ===============================
+CREATE TABLE patient_identity (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  core_id BIGINT NOT NULL,
+  first_name VARCHAR(80),
+  middle_name VARCHAR(80),
+  last_name VARCHAR(80),
+  preferred_name VARCHAR(80),
+  gender VARCHAR(32),
+  birthday DATE,
+  phone_mobile VARCHAR(32),
+  phone_home VARCHAR(32),
+  email VARCHAR(160),
+  city VARCHAR(80),
+  state VARCHAR(32),
+  CONSTRAINT fk_identity_core FOREIGN KEY (core_id) REFERENCES patient_core(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===============================
+-- 3️⃣ Données cliniques
+-- ===============================
+CREATE TABLE patient_clinical (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  core_id BIGINT NOT NULL,
+  blood_type VARCHAR(8),
+  height_cm DOUBLE,
+  weight_kg DOUBLE,
+  smoking_status VARCHAR(32),
+  alcohol_use VARCHAR(32),
+  CONSTRAINT fk_clinical_core FOREIGN KEY (core_id) REFERENCES patient_core(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===============================
+-- 4️⃣ Assurance
+-- ===============================
+CREATE TABLE patient_insurance (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  core_id BIGINT NOT NULL,
+  provider VARCHAR(120),
+  member_id VARCHAR(64),
+  plan_name VARCHAR(120),
+  expiration_date DATE,
+  CONSTRAINT fk_insurance_core FOREIGN KEY (core_id) REFERENCES patient_core(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ===============================
+-- 5️⃣ Consentements
+-- ===============================
+CREATE TABLE patient_consent (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  core_id BIGINT NOT NULL,
+  hipaa_consent_signed BOOLEAN DEFAULT FALSE,
+  hipaa_consent_at TIMESTAMP NULL,
+  telehealth_consent_signed BOOLEAN DEFAULT FALSE,
+  telehealth_consent_at TIMESTAMP NULL,
+  data_sharing_consent BOOLEAN DEFAULT FALSE,
+  CONSTRAINT fk_consent_core FOREIGN KEY (core_id) REFERENCES patient_core(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

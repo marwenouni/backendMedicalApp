@@ -72,8 +72,11 @@ public class WebSecurity {
         .requestMatchers("/auth/**").permitAll()
         
         // (optionnel pour débug) ouvrir GET patients :
-        .requestMatchers(HttpMethod.GET, "/api/patient/**").permitAll()
-        .requestMatchers(HttpMethod.POST, "/api/patient/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/api/patients/**").permitAll()
         // le reste protégé par JWT
         .anyRequest().authenticated()
       )

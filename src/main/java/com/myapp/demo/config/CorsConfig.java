@@ -14,8 +14,9 @@ public class CorsConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 	  CorsConfiguration cfg = new CorsConfiguration();
 	  cfg.setAllowedOrigins(List.of(
-			    "http://localhost:4200",              // 👈 dev
-			    "https://mymedicalapp.netlify.app"    // 👈 prod (remplace par ton vrai domaine)
+			    "http://localhost:4200",                           // 👈 dev local
+			    "https://my-ehr-app-production.up.railway.app",    // 👈 production Railway
+			    "https://mymedicalapp.netlify.app"                 // 👈 alternative prod
 			  )); // ton front
 	  cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
 	  cfg.setAllowedHeaders(List.of("authorization","content-type"));
@@ -27,5 +28,3 @@ public class CorsConfig {
 	  return source;
 	}
 }
-
-

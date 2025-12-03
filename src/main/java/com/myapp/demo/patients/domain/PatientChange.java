@@ -1,4 +1,4 @@
-package com.myapp.demo.entity;
+package com.myapp.demo.patients.domain;
 
 import jakarta.persistence.*;
 import java.time.Instant;

@@ -70,10 +70,21 @@ public class WebSecurity {
         .requestMatchers("/api/rdv/**").permitAll()
         // Auth publiques (login/register)
         .requestMatchers("/auth/**").permitAll()
-        
+        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/api/v1/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").permitAll()
+   
+        .requestMatchers(HttpMethod.GET, "/api/v1/encounters/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/v1/encounters/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/api/v1/encounters/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/api/v1/encounters/**").permitAll()
         // (optionnel pour débug) ouvrir GET patients :
-        .requestMatchers(HttpMethod.GET, "/api/patient/**").permitAll()
-        .requestMatchers(HttpMethod.POST, "/api/patient/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/api/patients/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/api/patients/**").permitAll()
         // le reste protégé par JWT
         .anyRequest().authenticated()
       )

@@ -1,4 +1,4 @@
-package com.myapp.demo.dto;
+package com.myapp.demo.patients.api.dto;
 
 import java.util.List;
 

@@ -51,6 +51,18 @@ public interface IPatientService {
 
 	List<PatientDto> findUpdated(Instant since);
 
+	// Updated since queries with filters
+	List<PatientDto> findUpdatedByIdCabinet(Instant since, Long idCabinet);
+
+	Page<PatientDto> findUpdatedByIdCabinetPaged(Instant since, Long idCabinet, Pageable pageable);
+
+	List<PatientDto> findUpdatedByIdProvider(Instant since, Long idProvider);
+
+	Page<PatientDto> findUpdatedByIdProviderPaged(Instant since, Long idProvider, Pageable pageable);
+
+	List<PatientDto> findUpdatedByIdCabinetAndIdProvider(Instant since, Long idCabinet, Long idProvider);
+
+	Page<PatientDto> findUpdatedByIdCabinetAndIdProviderPaged(Instant since, Long idCabinet, Long idProvider, Pageable pageable);
 
 	List<PatientDto> findAllPatientByBirthday(LocalDate birthday);
 
@@ -59,6 +71,7 @@ public interface IPatientService {
 	PatientDto createIdempotent(PatientDto dto);
 
 	PatientDto update(PatientDto dto);
+
 
 
 	

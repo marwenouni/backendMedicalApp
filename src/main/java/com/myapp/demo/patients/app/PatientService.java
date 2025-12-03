@@ -28,7 +28,6 @@ import com.myapp.demo.patients.infra.repository.PatientIdentityRepository;
 import com.myapp.demo.patients.infra.repository.PatientInsuranceRepository;
 import com.myapp.demo.patients.api.dto.PatientDto;
 import com.myapp.demo.patients.app.interfaces.IPatientService;
-import com.myapp.demo.entity.Patient;
 import com.myapp.demo.patients.domain.PatientClinical;
 import com.myapp.demo.patients.domain.PatientConsent;
 import com.myapp.demo.patients.domain.PatientCore;
@@ -42,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PatientService implements IPatientService {
 
-	List<Patient> patient;
 
 	PatientEventsController sse;
 	private final PatientCoreRepository coreRepo;
@@ -159,8 +157,7 @@ public class PatientService implements IPatientService {
 	public Page<PatientDto> findAllPatientByFilter(Pageable pageable) {
 		Page<PatientCore> page = coreRepo.findAll(pageable); 
 
-		List<PatientDto> dtos = page.getContent().stream().peek(pc -> System.out.println("core=" + pc.getId()))
-				.map(this::toDto).peek(dto -> System.out.println("dto.id=" + dto.id())).toList();
+		List<PatientDto> dtos = page.getContent().stream().map(this::toDto).toList();
 
 		return new PageImpl<>(dtos, pageable, page.getTotalElements());
 	}
@@ -359,7 +356,7 @@ public class PatientService implements IPatientService {
 		upsertInsurance(core, dto);
 		upsertConsent(core, dto);
 		if (sse != null)
-			sse.notifyPatientsChanged();
+			sse.notifyPatientsChangedAfterCommit();
 		return toDto(coreRepo.findWithAllById(core.getId()).orElse(core));
 	}
 
@@ -375,7 +372,7 @@ public class PatientService implements IPatientService {
 		core.setIdCabinet(dto.idCabinet());
 		core.setIdProvider(dto.idProvider());
 		if (sse != null)
-			sse.notifyPatientsChanged();
+			sse.notifyPatientsChangedAfterCommit();
 		return toDto(coreRepo.findWithAllById(core.getId()).orElse(core));
 	}
 	
@@ -415,6 +412,56 @@ public class PatientService implements IPatientService {
 	                .toList();
 	}
 
+	@Transactional(readOnly = true)
+	@Override
+	public List<PatientDto> findUpdatedByIdCabinet(Instant since, Long idCabinet) {
+		List<PatientCore> cores = coreRepo.findByUpdatedAtAfterAndIdCabinet(since, idCabinet);
+		return cores.stream()
+					.map(this::toDto)
+					.toList();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<PatientDto> findUpdatedByIdCabinetPaged(Instant since, Long idCabinet, Pageable pageable) {
+		Page<PatientCore> page = coreRepo.findByUpdatedAtAfterAndIdCabinet(since, idCabinet, pageable);
+		List<PatientDto> dtos = page.getContent().stream().map(this::toDto).toList();
+		return new PageImpl<>(dtos, pageable, page.getTotalElements());
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<PatientDto> findUpdatedByIdProvider(Instant since, Long idProvider) {
+		List<PatientCore> cores = coreRepo.findByUpdatedAtAfterAndIdProvider(since, idProvider);
+		return cores.stream()
+					.map(this::toDto)
+					.toList();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<PatientDto> findUpdatedByIdProviderPaged(Instant since, Long idProvider, Pageable pageable) {
+		Page<PatientCore> page = coreRepo.findByUpdatedAtAfterAndIdProvider(since, idProvider, pageable);
+		List<PatientDto> dtos = page.getContent().stream().map(this::toDto).toList();
+		return new PageImpl<>(dtos, pageable, page.getTotalElements());
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public List<PatientDto> findUpdatedByIdCabinetAndIdProvider(Instant since, Long idCabinet, Long idProvider) {
+		List<PatientCore> cores = coreRepo.findByUpdatedAtAfterAndIdCabinetAndIdProvider(since, idCabinet, idProvider);
+		return cores.stream()
+					.map(this::toDto)
+					.toList();
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<PatientDto> findUpdatedByIdCabinetAndIdProviderPaged(Instant since, Long idCabinet, Long idProvider, Pageable pageable) {
+		Page<PatientCore> page = coreRepo.findByUpdatedAtAfterAndIdCabinetAndIdProvider(since, idCabinet, idProvider, pageable);
+		List<PatientDto> dtos = page.getContent().stream().map(this::toDto).toList();
+		return new PageImpl<>(dtos, pageable, page.getTotalElements());
+	}
 
 	@Transactional(readOnly = true)
 	@Override

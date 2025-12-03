@@ -198,13 +198,25 @@ public class PatientController {
 	}
 
 	@GetMapping("/updated-since")
-	public ResponseEntity<List<PatientDto>> updatedSince(@RequestParam("since") long sinceEpochMs) {
-
+	public ResponseEntity<List<PatientDto>> updatedSince(
+		@RequestParam("since") long sinceEpochMs,
+		@RequestParam(required = false) Long idCabinet,
+		@RequestParam(required = false) Long idProvider
+	) {
 		long nonNegativeSince = Math.max(0L, sinceEpochMs);
-
 		Instant since = Instant.ofEpochMilli(nonNegativeSince);
 
-		List<PatientDto> patients = patientService.findUpdated(since);
+		List<PatientDto> patients;
+
+		if (idCabinet != null && idProvider != null) {
+			patients = patientService.findUpdatedByIdCabinetAndIdProvider(since, idCabinet, idProvider);
+		} else if (idCabinet != null) {
+			patients = patientService.findUpdatedByIdCabinet(since, idCabinet);
+		} else if (idProvider != null) {
+			patients = patientService.findUpdatedByIdProvider(since, idProvider);
+		} else {
+			patients = patientService.findUpdated(since);
+		}
 
 		return ResponseEntity.ok(patients);
 	}

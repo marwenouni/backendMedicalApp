@@ -21,28 +21,46 @@ public interface PatientCoreRepository extends JpaRepository<PatientCore, Long> 
 	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
     List<PatientCore> findByUpdatedAtAfter(Instant since);
 
-	
-	  @EntityGraph(attributePaths =  {"identity","clinical","insurance","consent"})
-	  List<PatientCore> findAll();
-	  
-	  @EntityGraph(attributePaths =  {"identity","clinical","insurance","consent"})
-	  Page<PatientCore> findAll(Pageable page);
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	List<PatientCore> findAll();
 
-	  @EntityGraph(attributePaths = {"identity","clinical","insurance","consent"})
-	  @Query("select c from PatientCore c where c.id = :id")
-	  Optional<PatientCore> findWithAllById(Long id);
-	  
-	  @EntityGraph(attributePaths = {"identity","clinical","insurance","consent"})
-	  Page<PatientCore> findAllBy(Pageable pageable);
-	  
-	  @EntityGraph(attributePaths = {"identity","clinical","insurance","consent"})
-	  @Query("select c from PatientCore c where c.id = :id")
-	  Optional<PatientCore> findById(Long id);
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	Page<PatientCore> findAll(Pageable page);
 
-	  List<PatientCore>  findAllByIdCabinet(Long idCabinet);
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	@Query("select c from PatientCore c where c.id = :id")
+	Optional<PatientCore> findWithAllById(Long id);
 
-	  List<PatientCore>  findAllByIdProvider(Long idProvider);
-	  
-	  
-	
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	Page<PatientCore> findAllBy(Pageable pageable);
+
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	@Query("select c from PatientCore c where c.id = :id")
+	Optional<PatientCore> findById(Long id);
+
+	List<PatientCore> findAllByIdCabinet(Long idCabinet);
+
+	List<PatientCore> findAllByIdProvider(Long idProvider);
+
+	// Updated since queries with cabinet filter
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	List<PatientCore> findByUpdatedAtAfterAndIdCabinet(Instant since, Long idCabinet);
+
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	Page<PatientCore> findByUpdatedAtAfterAndIdCabinet(Instant since, Long idCabinet, Pageable pageable);
+
+	// Updated since queries with provider filter
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	List<PatientCore> findByUpdatedAtAfterAndIdProvider(Instant since, Long idProvider);
+
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	Page<PatientCore> findByUpdatedAtAfterAndIdProvider(Instant since, Long idProvider, Pageable pageable);
+
+	// Updated since queries with both cabinet and provider filters
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	List<PatientCore> findByUpdatedAtAfterAndIdCabinetAndIdProvider(Instant since, Long idCabinet, Long idProvider);
+
+	@EntityGraph(attributePaths = {"identity", "clinical", "insurance", "consent"})
+	Page<PatientCore> findByUpdatedAtAfterAndIdCabinetAndIdProvider(Instant since, Long idCabinet, Long idProvider, Pageable pageable);
+
 }

@@ -3,6 +3,8 @@ package com.myapp.demo.patients.api;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -36,4 +38,17 @@ public class PatientEventsController {
       catch (Exception ex) { clients.remove(e); }
     }
   }
+  
+  public void notifyPatientsChangedAfterCommit() {
+	  if (TransactionSynchronizationManager.isActualTransactionActive()) {
+	    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+	      @Override
+	      public void afterCommit() {
+	        notifyPatientsChanged();
+	      }
+	    });
+	  } else {
+	    notifyPatientsChanged(); // si pas de transaction active
+	  }
+	}
 }

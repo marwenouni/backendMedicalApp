@@ -13,14 +13,14 @@ public class CorsConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 	  CorsConfiguration cfg = new CorsConfiguration();
-	  cfg.setAllowedOrigins(List.of(
-			    "http://localhost:4200",                           // 👈 dev local
-			    "https://my-ehr-app-production.up.railway.app",    // 👈 production Railway
-			    "https://mymedicalapp.netlify.app"                 // 👈 alternative prod
-			  )); // ton front
-	  cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-	  cfg.setAllowedHeaders(List.of("authorization","content-type"));
-	  cfg.setAllowCredentials(false); // laisse à false si tu n’utilises pas de cookies
+	  cfg.setAllowedOriginPatterns(List.of(
+			    "http://localhost:*",
+			    "https://my-ehr-app-production.up.railway.app",
+			    "https://mymedicalapp.netlify.app"
+			  ));
+	  cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));
+	  cfg.setAllowedHeaders(List.of("*"));
+	  cfg.setAllowCredentials(false);
 	  cfg.setMaxAge(3600L);
 
 	  UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

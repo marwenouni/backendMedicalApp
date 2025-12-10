@@ -61,6 +61,12 @@ public class WebSecurity {
         // Laisse passer les préflights CORS
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+        // App Configuration API (public access for all)
+        .requestMatchers(HttpMethod.GET, "/api/config/**").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/config/**").permitAll()
+        .requestMatchers(HttpMethod.PUT, "/api/config/**").permitAll()
+        .requestMatchers(HttpMethod.DELETE, "/api/config/**").permitAll()
+        .requestMatchers(HttpMethod.PATCH, "/api/config/**").permitAll()
         // Ouvre SSE + delta
         .requestMatchers("/events/**").permitAll()
         .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
@@ -74,7 +80,7 @@ public class WebSecurity {
         .requestMatchers(HttpMethod.POST, "/api/v1/**").permitAll()
         .requestMatchers(HttpMethod.PUT, "/api/v1/**").permitAll()
         .requestMatchers(HttpMethod.DELETE, "/api/v1/**").permitAll()
-   
+
         .requestMatchers(HttpMethod.GET, "/api/v1/encounters/**").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/v1/encounters/**").permitAll()
         .requestMatchers(HttpMethod.PUT, "/api/v1/encounters/**").permitAll()
